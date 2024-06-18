@@ -20,4 +20,4 @@ RUN npm run build
 EXPOSE 8000
 
 # Khởi chạy ứng dụng
-CMD ["npm", "start"]
+CMD ["npm", "node", "./dist/app.js"]

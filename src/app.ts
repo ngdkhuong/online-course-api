@@ -9,3 +9,5 @@ app.get('/api/test', (req: Request, res: Response, next: NextFunction) => {
         message: 'API is working',
     });
 });
+
+app.listen(8000);
