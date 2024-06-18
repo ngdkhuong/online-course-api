@@ -17,8 +17,8 @@ jobs:
 
             - name: Build and push Docker image
               run: |
-                  docker build -t ${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME:${{ github.sha }} .
-                  docker push ${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME:${{ github.sha }}
+                  docker build -t ${{ secrets.DOCKER_USERNAME }} .
+                  docker push ${{ secrets.DOCKER_USERNAME }}
 
             # - name: Deploy to EC2 instance
             #   env:
@@ -37,7 +37,7 @@ jobs:
         runs-on: self-hosted
         steps:
             - name: Pull image from docker hub
-              run: docker pull sukablyat007/online-courses-api:$IMAGE_NAME:${{ github.sha }}
+              run: docker pull sukablyat007/online-courses-api:latest
             - name: Delete old container
               run: docker rm -f online-courses-api
             - name: Run Docker Container
