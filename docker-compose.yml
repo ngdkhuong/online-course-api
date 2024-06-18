@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+    app:
+        build: .
+        ports:
+            - '3000:3000'
+        environment:
+            - MONGO_URI=mongodb://mongo:27017/online_course_db
+        depends_on:
+            - mongo
+
+    mongo:
+        image: mongo
+        volumes:
+            - mongo-data:/data/db
+
+volumes:
+    mongo-data:
