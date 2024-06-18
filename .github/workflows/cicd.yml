@@ -34,11 +34,11 @@ jobs:
             #       EOF
     deploy:
         needs: build
-        runs-on: self-hosted
+        runs-on: [online-courses-api]
         steps:
             - name: Pull image from docker hub
               run: docker pull sukablyat007/online-courses-api:latest
             - name: Delete old container
               run: docker rm -f online-courses-api
             - name: Run Docker Container
-              run: docker run -d -p 80:8000 --name online-courses-api sukablyat007/online-courses-api
+              run: docker run -d -p 8000:8000 --name online-courses-api sukablyat007/online-courses-api
