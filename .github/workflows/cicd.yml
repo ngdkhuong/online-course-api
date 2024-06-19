@@ -17,8 +17,8 @@ jobs:
 
             - name: Build and push Docker image
               run: |
-                  docker build -t ${{ secrets.DOCKER_USERNAME }}/online-courses-api .
-                  docker push ${{ secrets.DOCKER_USERNAME }}/online-courses-api:latest
+                  docker build -t sukablyat007/online-courses-api .
+                  docker push sukablyat007/online-courses-api:latest
 
             # - name: Deploy to EC2 instance
             #   env:
