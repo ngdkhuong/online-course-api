@@ -34,7 +34,7 @@ jobs:
             #       EOF
     deploy:
         needs: build
-        runs-on: self-hosted
+        runs-on: [online-courses-api]
         steps:
             - name: Pull image from docker hub
               run: docker pull sukablyat007/online-courses-api:latest
