@@ -6,24 +6,46 @@ on:
 
 jobs:
     build:
-        runs-on: [ubuntu-latest]
+        runs-on: ubuntu-latest
         steps:
             - name: Checkout source
               uses: actions/checkout@v4
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v2
+
+            - name: Install Docker
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y docker.io
+                  sudo systemctl start docker
+                  sudo systemctl enable docker
+
             - name: Login to docker hub
               run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
             - name: Build docker image
               run: docker build -t sukablyat007/online-courses-api .
+
             - name: Publish image to docker hub
               run: docker push sukablyat007/online-courses-api:latest
 
     deploy:
         needs: build
-        runs-on: [online-course-api]
+        runs-on: self-hosted # Hoặc tên của runner tự host nếu bạn có
         steps:
+            - name: Install Docker
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y docker.io
+                  sudo systemctl start docker
+                  sudo systemctl enable docker
+
             - name: Pull image from docker hub
               run: docker pull sukablyat007/online-courses-api:latest
+
             - name: Delete old container
-              run: docker rm -f online-courses-container
+              run: docker rm -f online-courses-container || true
+
             - name: Run docker container
               run: docker run -d -p 5000:5000 --name online-courses-container sukablyat007/online-courses-api
