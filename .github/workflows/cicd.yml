@@ -32,7 +32,7 @@ jobs:
 
     deploy:
         needs: build
-        runs-on: self-hosted # Hoặc tên của runner tự host nếu bạn có
+        runs-on: self-hosted
         steps:
             - name: Install Docker
               run: |
