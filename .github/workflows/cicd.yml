@@ -26,4 +26,4 @@ jobs:
             - name: Delete old container
               run: docker rm -f online-courses-container
             - name: Run docker container
-              run: docker run -d -p 5000:5000 --name online-courses-container sukablyat007/online-courses-api
+              run: docker run -d -p 8000:8000 --name online-courses-container sukablyat007/online-courses-api
