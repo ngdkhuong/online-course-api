@@ -1,5 +1,5 @@
-# Sử dụng Node.js version 18 làm base image
-FROM node:20
+# Sử dụng Node.js version 20 làm base image
+FROM node:20.13.1
 
 # Tạo thư mục app
 WORKDIR /app
