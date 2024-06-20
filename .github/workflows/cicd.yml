@@ -11,47 +11,20 @@ jobs:
         steps:
             - name: Checkout source
               uses: actions/checkout@v4
-            - name: Create .env file
-              run: echo "MONGO_URI=${{ secrets.MONGO_URI }}" >> .env
             - name: Login to docker hub
               run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             - name: Build docker image
-              run: docker build -t sukablyat007/online-course-api .
+              run: docker build -t sukablyat007/online-courses-api .
             - name: Publish image to docker hub
-              run: docker push sukablyat007/online-course-api:latest
+              run: docker push sukablyat007/online-courses-api:latest
 
     deploy:
         needs: build
         runs-on: self-hosted
         steps:
-            - name: Create docker secret for .env variables
-              uses: docker/build-push-action@v3
-              with:
-                  context: .
-                  push: false # Don't push image, only build
-                  build-args: |
-                      MONGO_URI=${{ secrets.MONGO_URI }}
-                      REDIS_URL=${{ secrets.REDIS_URL }}
-                      ACTIVATION_SECRET=${{ secrets.ACTIVATION_SECRET }}
-                      ACCESS_TOKEN=${{ secrets.ACCESS_TOKEN }}
-                      REFRESH_TOKEN=${{ secrets.REFRESH_TOKEN }}
-                      ACCESS_TOKEN_EXPIRE=${{ secrets.ACCESS_TOKEN_EXPIRE }}
-                      REFRESH_TOKEN_EXPIRE=${{ secrets.REFRESH_TOKEN_EXPIRE }}
-                      SMTP_HOST=${{ secrets.SMTP_HOST }}
-                      SMTP_PORT=${{ secrets.SMTP_PORT }}
-                      SMTP_SERVICE=${{ secrets.SMTP_SERVICE }}
-                      SMTP_MAIL=${{ secrets.SMTP_MAIL }}
-                      SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}
-                      CLOUD_NAME=${{ secrets.CLOUD_NAME }}
-                      CLOUD_SECRET_KEY=${{ secrets.CLOUD_SECRET_KEY }}
-                      CLOUD_API_KEY=${{ secrets.CLOUD_API_KEY }}
-                      # VDOCIPHER_API_SECRET=${{ secrets.VDOCIPHER_API_SECRET }}
-                      # STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}
-                      # STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY }}
-
             - name: Pull image from docker hub
-              run: docker pull sukablyat007/online-course-api:latest
+              run: docker pull sukablyat007/online-courses-api:latest
             - name: Delete old container
-              run: docker rm -f online-course-container
+              run: docker rm -f online-courses-container
             - name: Run docker container
-              run: docker run -d -p 8000:8000 --name online-course-container sukablyat007/online-course-api
+              run: docker run -d -p 8000:8000 --name online-courses-container sukablyat007/online-courses-api
