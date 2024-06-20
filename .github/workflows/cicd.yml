@@ -12,7 +12,7 @@ jobs:
             - name: Checkout source
               uses: actions/checkout@v4
             - name: Create .env file
-              run: echo `${{ secrets.PROD_ENV_FILE }}` >> .env
+              run: echo "${{ secrets.PROD_ENV_FILE }}" >> .env
             - name: Login to docker hub
               run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             - name: Build docker image
