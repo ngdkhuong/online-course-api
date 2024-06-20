@@ -1,23 +1,17 @@
-# Sử dụng Node.js version 20 làm base image
-FROM node:20.13.1
+FROM node:latest
 
-# Tạo thư mục app
-WORKDIR /app
+WORKDIR /usr/src/app
 
-# Sao chép package.json và package-lock.json
 COPY package*.json ./
 
-# Cài đặt các dependencies
-RUN npm ci
+RUN npm install
 
-# Sao chép toàn bộ mã nguồn
 COPY . .
 
-# Build ứng dụng
+COPY .env ./
+
 RUN npm run build
 
-# Expose port mà ứng dụng sẽ chạy
 EXPOSE 8000
 
-# Khởi chạy ứng dụng
-CMD ["npm", "node", "./dist/app.js"]
+CMD [ "node", "dist/app.js" ]
