@@ -1,8 +1,9 @@
-name: CICD
+name: Deploy Nodejs Application
 
 on:
     push:
-        branches: [main]
+        branches:
+            - main
 
 jobs:
     build:
@@ -10,20 +11,22 @@ jobs:
         steps:
             - name: Checkout source
               uses: actions/checkout@v4
+            - name: Create .env file
+              run: echo "${{ secrets.PROD_ENV_FILE }}" > .env
             - name: Login to docker hub
               run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             - name: Build docker image
-              run: docker build -t sukablyat007/online-courses-api .
+              run: docker build -t sukablyat007/online-course-api .
             - name: Publish image to docker hub
-              run: docker push sukablyat007/online-courses-api:latest
+              run: docker push sukablyat007/online-course-api:latest
 
     deploy:
         needs: build
         runs-on: self-hosted
         steps:
             - name: Pull image from docker hub
-              run: docker pull sukablyat007/online-courses-api:latest
+              run: docker pull sukablyat007/online-course-api:latest
             - name: Delete old container
-              run: docker rm -f online-courses-container
+              run: docker rm -f online-course-container
             - name: Run docker container
-              run: docker run -d -p 8000:8000 --name online-courses-container sukablyat007/online-courses-api
+              run: docker run -d -p 8000:8000 --name online-course-container sukablyat007/online-course-api
