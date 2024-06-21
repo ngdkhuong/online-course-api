@@ -25,6 +25,6 @@ jobs:
             - name: Pull image from docker hub
               run: docker pull sukablyat007/online-courses-api:latest
             - name: Delete old container
-              run: docker rm -rf online-courses-container
+              run: docker rm -f online-courses-container
             - name: Run docker container
               run: docker run -d -p 8000:8000 --name online-courses-container sukablyat007/online-courses-api
