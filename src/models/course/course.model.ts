@@ -1,35 +1,54 @@
-import mongoose, { Document, Model, Schema } from 'mongoose';
-import { ILesson } from './lesson.model';
-import { IReview } from './review.model';
+import { Schema, model, Document } from 'mongoose';
+import { IChapter } from './chapter.model';
+import { IUser } from '../user.model';
+import { ICertificate } from './certificate.model';
 
 export interface ICourse extends Document {
-    name: string;
+    title: string;
     description: string;
-    category: string;
+    thumbnail: {
+        public_id: string;
+        url: string;
+    };
     price: number;
     isFree: boolean;
     duration: number;
     enrolledStudents: Array<{ userId: string }>;
-    lessons: ILesson[];
-    reviews: IReview[];
-    avgRating: number;
-    numReviews: number;
+    reviews: Array<{
+        user: IUser;
+        rating: number;
+        comment: string;
+    }>;
+    tags: string[];
+    categories: string[];
+    chapters: IChapter[];
+    certificate: ICertificate;
 }
 
-const courseSchema: Schema<ICourse> = new mongoose.Schema(
+const courseSchema: Schema<ICourse> = new Schema(
     {
-        name: {
+        title: {
             type: String,
             required: [true, 'Please enter the course name'],
         },
         description: {
             type: String,
-            required: [true, 'Please enter the course description'],
+            required: [true, 'Please enter the course name'],
+        },
+        thumbnail: {
+            public_id: {
+                type: String,
+                required: true,
+            },
+            url: {
+                type: String,
+                required: true,
+            },
         },
         price: {
             type: Number,
-            required: [true, 'Please enter the course price'],
-            min: [0, 'Price must be a positive number'],
+            required: true,
+            default: 0,
         },
         isFree: {
             type: Boolean,
@@ -37,32 +56,59 @@ const courseSchema: Schema<ICourse> = new mongoose.Schema(
         },
         duration: {
             type: Number,
-            required: [true, 'Please enter the course duration in hours'],
-            min: [1, 'Duration must be at least 1 hour'],
-        },
-        category: {
-            type: String,
-            required: [true, 'Please enter the course category'],
+            required: true,
         },
         enrolledStudents: [
             {
-                userId: String,
+                type: Schema.Types.ObjectId,
+                ref: 'User',
             },
         ],
-        lessons: [{ type: Schema.Types.ObjectId, ref: 'Lesson' }],
-        reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }],
-        avgRating: {
-            type: Number,
-            default: 0,
-        },
-        numReviews: {
-            type: Number,
-            default: 0,
+        reviews: [
+            {
+                user: {
+                    type: Schema.Types.ObjectId,
+                    ref: 'User',
+                    required: true,
+                },
+                rating: {
+                    type: Number,
+                    required: true,
+                    min: 1,
+                    max: 5,
+                },
+                comment: {
+                    type: String,
+                    required: true,
+                },
+            },
+        ],
+        tags: [
+            {
+                type: String,
+            },
+        ],
+        categories: [
+            {
+                type: String,
+            },
+        ],
+        chapters: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'Chapter',
+            },
+        ],
+        certificate: {
+            type: Schema.Types.ObjectId,
+            ref: 'Certificate',
         },
     },
-    { timestamps: true },
+    {
+        timestamps: true,
+    },
 );
 
-const courseModel: Model<ICourse> = mongoose.model('Course', courseSchema);
+const Course = model<ICourse>('Course', courseSchema);
 
-export default courseModel;
+export default Course;

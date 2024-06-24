@@ -1,16 +1,24 @@
-// certificate.model.ts
 import { Schema, model, Document } from 'mongoose';
+import { IUser } from '../user.model';
+import { ICourse } from './course.model';
 
 export interface ICertificate extends Document {
-    title: string;
-    description: string;
-    image: string;
+    user: IUser;
+    course: ICourse;
+    filePath: string;
 }
 
-const certificateSchema = new Schema({
-    title: { type: String, required: true },
-    description: { type: String, required: true },
-    image: { type: String, required: true },
-});
+const certificateSchema: Schema<ICertificate> = new Schema(
+    {
+        user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        course: { type: Schema.Types.ObjectId, ref: 'Course', required: true },
+        filePath: { type: String, required: true },
+    },
+    {
+        timestamps: true,
+    },
+);
 
-export const CertificateModel = model<ICertificate>('Certificate', certificateSchema);
+const Certificate = model<ICertificate>('Certificate', certificateSchema);
+
+export default Certificate;

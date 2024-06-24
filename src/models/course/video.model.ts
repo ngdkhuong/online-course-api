@@ -8,9 +8,18 @@ export interface IVideo extends Document {
 }
 
 const videoSchema = new Schema({
-    title: { type: String, required: true },
-    url: { type: String, required: true },
-    duration: { type: Number, required: true },
+    title: {
+        type: String,
+        required: true,
+    },
+    url: {
+        type: String,
+        required: true,
+    },
+    duration: {
+        type: Number,
+        required: true,
+    },
 });
 
 export const VideoModel = model<IVideo>('Video', videoSchema);

@@ -1,9 +1,10 @@
 import express, { Request, Response, NextFunction, Express } from 'express';
 import cors from 'cors';
-import connectDB from './config/database';
+import connectDB from './config/database.config';
 // import { userRouter } from './routes/user';
 // import { courseRouter } from './routes/course';
 // import { lessonRouter } from './routes/lesson';
+import { protect, admin } from './middleware/auth.middleware';
 
 const app: Express = express();
 

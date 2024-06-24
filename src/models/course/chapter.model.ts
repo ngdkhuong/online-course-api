@@ -1,15 +1,26 @@
-// chapter.model.ts
 import { Schema, model, Document } from 'mongoose';
 import { ILesson } from './lesson.model';
+import { ICourse } from './course.model';
 
-interface IChapter extends Document {
+export interface IChapter extends Document {
     title: string;
+    course: ICourse;
     lessons: ILesson[];
 }
 
-const chapterSchema = new Schema({
-    title: { type: String, required: true },
-    lessons: [{ type: Schema.Types.ObjectId, ref: 'Lesson' }],
-});
+const chapterSchema: Schema<IChapter> = new Schema(
+    {
+        title: { type: String, required: true },
+        lessons: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'Lesson',
+            },
+        ],
+    },
+    {
+        timestamps: true,
+    },
+);
 
-export const ChapterModel = model<IChapter>('Chapter', chapterSchema);
+export const Chapter = model<IChapter>('Chapter', chapterSchema);
