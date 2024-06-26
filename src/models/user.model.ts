@@ -1,11 +1,9 @@
 import { Schema, model, Document } from 'mongoose';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import crypto from 'crypto';
 import { ICertificate } from './course/certificate.model';
 
 export interface IUser extends Document {
-    name: string;
+    username: string;
     email: string;
     password: string;
     role: 'user' | 'admin';
@@ -34,7 +32,7 @@ export interface IUser extends Document {
 
 const userSchema: Schema<IUser> = new Schema(
     {
-        name: {
+        username: {
             type: String,
             required: true,
         },
@@ -108,9 +106,7 @@ const userSchema: Schema<IUser> = new Schema(
 
 userSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
-
     this.password = await bcrypt.hash(this.password, 10);
-
     next();
 });
 

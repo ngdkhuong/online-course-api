@@ -1,12 +1,12 @@
 import { Redis } from 'ioredis';
-require('dotenv').config();
+import { config } from '../config/config';
 
 // ? kết nối redis cần lấy link sửa redis ==> rediss
 // ? => k bị mắc lỗi disconnect redis
 const redisClient = () => {
-    if (process.env.REDIS_URL) {
+    if (config.redis.url) {
         console.log(`Redis Connected`);
-        return process.env.REDIS_URL;
+        return config.redis.url;
     }
 
     throw new Error('Redis connection failed');
