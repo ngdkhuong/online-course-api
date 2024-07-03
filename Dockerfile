@@ -1,53 +1,24 @@
-FROM node:latest
+# Common build stage
+FROM node:20.13.1-alpine3.12 as common-build-stage
 
-# Set the working directory
+COPY . ./app
+
 WORKDIR /app
 
-# Copy package.json and package-lock.json
-COPY package*.json ./
-
-# Install dependencies
 RUN npm install
 
-# Copy the rest of the application
-COPY . .
+EXPOSE 8080
 
-# Copy .env file
-ENV MONGO_URI=${MONGO_URI}
+# Development build stage
+FROM common-build-stage as development-build-stage
 
-ENV REDIS_URL=${REDIS_URL}
+ENV NODE_ENV development
 
-ENV ACTIVATION_SECRET=${ACTIVATION_SECRET}
+CMD ["npm", "run", "dev"]
 
-ENV ACCESS_TOKEN=${ACCESS_TOKEN}
+# Production build stage
+FROM common-build-stage as production-build-stage
 
-ENV REFRESH_TOKEN=${REFRESH_TOKEN}
+ENV NODE_ENV production
 
-ENV ACCESS_TOKEN_EXPIRE=${ACCESS_TOKEN_EXPIRE}
-
-ENV REFRESH_TOKEN_EXPIRE=${REFRESH_TOKEN_EXPIRE}
-
-ENV SMTP_HOST=${SMTP_HOST}
-
-ENV SMTP_PORT=${SMTP_PORT}
-
-ENV SMTP_SERVICE=${SMTP_SERVICE}
-
-ENV SMTP_MAIL=${SMTP_MAIL}
-
-ENV SMTP_PASSWORD=${SMTP_PASSWORD}
-
-ENV CLOUD_NAME=${CLOUD_NAME}
-
-ENV CLOUD_SECRET_KEY=${CLOUD_SECRET_KEY} 
-
-ENV CLOUD_API_KEY=${CLOUD_API_KEY}
-
-# Build app
-RUN npm run build
-
-# Expose the port
-EXPOSE 8000
-
-# Start the application
-CMD [ "node", "dist/app.js" ]
+CMD ["npm", "run", "start"]

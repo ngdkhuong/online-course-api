@@ -1,14 +1,17 @@
-version: '3'
+version: '3.8'
 
 services:
-    app:
-        build: .
+    server: 
+        build: 
+            context: ./
+            target: development-build-stage
+            dockerfile: Dockerfile
+        container_name: server
         ports:
-            - '8000:8000'
-        environment:
-            - MONGO_URI=mongodb://mongo:27017/online_course_db
-        depends_on:
-            - mongo
+            - '3000:3000'   
+        volumes:
+        - ./:/app
+        - /app/node_modules
 
     mongo:
         image: mongo

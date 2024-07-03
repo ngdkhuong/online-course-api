@@ -1,41 +1,24 @@
-import express, { Request, Response, NextFunction, Express } from 'express';
-import cors from 'cors';
-import { connectToDatabase } from './config/database';
-// import { userRouter } from './routes/user';
-// import { courseRouter } from './routes/course';
-// import { lessonRouter } from './routes/lesson';
-import { protect, admin } from './middleware/auth.middleware';
-import authRouter from './routes/auth.route';
-import { TokenUtils } from './utils/token';
-import { AuthService } from './services/auth.service';
+// nén dữ liệu trước khi gửi cho client
+import compression from 'compression';
+import express, { Application } from 'express';
 
-const app: Express = express();
+class App {
+    public app: Application;
+    public port: string | number;
+    public allowedOrigins = ['http://localhost:3000', 'http://127.0.0.1:3000'];
 
-const port = process.env.PORT || 8000;
+    constructor() {
+        this.app = express();
+        // this.port = PORT || 3000;
+    }
 
-// Middleware
-app.use(express.json());
-app.use(cors());
+    public listen() {
+        this.app.listen(this.port);
+    }
 
-app.get('/test', (req: Request, res: Response, next: NextFunction) => {
-    res.status(200).json({
-        success: true,
-        message: 'API is working',
-    });
-});
+    public getServer() {
+        return this.app;
+    }
+}
 
-// service
-const token = new TokenUtils();
-// const otpService = new OTPService();
-// const emailService = new EmailService();
-const authService = new AuthService();
-
-// Routes
-app.use('/api/auth', authRouter);
-// app.use('/api/courses', courseRouter);
-// app.use('/api/lessons', lessonRouter);
-
-app.listen(port, () => {
-    console.log(`server is on port ${port}`);
-    connectToDatabase();
-});
+export default App;
