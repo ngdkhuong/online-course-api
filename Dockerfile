@@ -1,11 +1,11 @@
 # Common build stage
-FROM node:20.13.1-alpine3.12 as common-build-stage
+FROM node:20 as common-build-stage
 
 COPY . ./app
 
 WORKDIR /app
 
-RUN npm install
+RUN npm install npm@latest -g
 
 EXPOSE 8080
 
