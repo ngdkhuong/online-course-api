@@ -16,15 +16,15 @@ jobs:
             - name: Build docker image
               run: docker build -t sukablyat007/online-courses-api .
             - name: Publish image to docker hub
-              run: docker push sukablyat007/online-courses-api:latest
+              run: docker push sukablyat007/online-courses-api:1.0.0
 
     deploy:
         needs: build
         runs-on: self-hosted
         steps:
             - name: Pull image from docker hub
-              run: docker pull sukablyat007/online-courses-api:latest
+              run: docker pull sukablyat007/online-courses-api:1.0.0
             - name: Delete old container
               run: docker rm -f online-courses-container
             - name: Run docker container
-              run: docker run -d -p 3000:3000 --name online-courses-container sukablyat007/online-courses-api
+              run: docker run -d -p 8080:8080 --name online-courses-container sukablyat007/online-courses-api
