@@ -8,8 +8,6 @@ import cookieParser from 'cookie-parser';
 import { config } from './config/config';
 // import swaggerUi from 'swagger-ui-express';
 
-// import rateLimiter from './middleware/rateLimiter';
-
 // import CorporateTraineeRouter from './routes/CorporateTrainee';
 // import IndividualTraineeRouter from './routes/IndividualTrainee';
 // import InstructorRouter from './routes/Instructor';
@@ -27,6 +25,7 @@ import { config } from './config/config';
 const cors = require('cors');
 import * as path from 'path';
 import logger from './middleware/logger';
+import rateLimiter from './middleware/rateLimiter';
 
 const app = express();
 

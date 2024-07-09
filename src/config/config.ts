@@ -8,8 +8,11 @@ const SERVER_PORT = process.env.SERVER_PORT ? Number(process.env.SERVER_PORT) : 
 
 const ORIGIN_PORT = process.env.ORIGIN_PORT || 'http://localhost:3000';
 
+const REDIS_URL = process.env.REDIS_URL || '';
+
 export const config = {
     MONGO_URI,
     SERVER_PORT,
     ORIGIN_PORT,
+    REDIS_URL,
 };

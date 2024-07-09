@@ -2,8 +2,10 @@ import chalk from 'chalk';
 import { Request, Response, NextFunction } from 'express';
 
 const logInfo = (args: any) => {
-    console.log(chalk.blue(`[${new Date().toLocaleTimeString()}] [INFO]`));
-    typeof args === 'string' ? chalk.blueBright(args) : chalk.blueBright(JSON.stringify(args));
+    console.log(
+        chalk.blue(`[${new Date().toLocaleTimeString()}] [INFO]`),
+        typeof args === 'string' ? chalk.blueBright(args) : chalk.blueBright(JSON.stringify(args)),
+    );
 };
 
 const logSuccess = (args: any) => {
@@ -32,6 +34,6 @@ const logger = (req: Request, res: Response, next: NextFunction) => {
     next();
 };
 
-export { logInfo, logSuccess };
+export { logInfo, logSuccess, logError };
 
 export default logger;
