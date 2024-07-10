@@ -5,7 +5,7 @@ import { parseQueryParams } from './utils/parseQueryParams';
 // import AdminJS from 'adminjs';
 // import { Database, Resource } from '@adminjs/mongoose';
 import cookieParser from 'cookie-parser';
-import { config } from './config/config';
+import { config } from './configs/config';
 // import swaggerUi from 'swagger-ui-express';
 
 // import CorporateTraineeRouter from './routes/CorporateTrainee';
@@ -24,8 +24,8 @@ import { config } from './config/config';
 
 const cors = require('cors');
 import * as path from 'path';
-import logger from './middleware/logger';
-import rateLimiter from './middleware/rateLimiter';
+import logger from './middlewares/logger';
+import rateLimiter from './middlewares/rateLimiter';
 
 const app = express();
 
