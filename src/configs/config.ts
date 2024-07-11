@@ -1,18 +1,38 @@
-import dotenv from 'dotenv';
+import { config } from 'dotenv';
+config({
+    path: `.env.${process.env.NODE_ENV || 'development'}.local`,
+});
 
-dotenv.config();
+export const CREDENTIALS = process.env.CREDENTIALS === 'true';
 
-const MONGO_URI = process.env.MONGO_URI || '';
-
-const SERVER_PORT = process.env.SERVER_PORT ? Number(process.env.SERVER_PORT) : 8080;
-
-const ORIGIN_PORT = process.env.ORIGIN_PORT || 'http://localhost:3000';
-
-const REDIS_URL = process.env.REDIS_URL || '';
-
-export const config = {
+export const {
+    NODE_ENV,
+    PORT,
     MONGO_URI,
-    SERVER_PORT,
-    ORIGIN_PORT,
-    REDIS_URL,
-};
+    SECRET_KEY,
+    LOG_FORMAT,
+    LOG_DIR,
+    ORIGIN,
+    EXCHANGE_BASE_URL,
+    JWT_ACCESS_TOKEN_SECRET,
+    JWT_REFRESH_TOKEN_SECRET,
+    CLIENT_URL,
+    COMPANY_LOGO,
+    COMPANY_NAME,
+    COMPANY_ADDRESS,
+    COMPANY_PHONE,
+    COMPANY_EMAIL,
+    COMPANY_WEBSITE,
+    COMPANY_FACEBOOK,
+    COMPANY_TWITTER,
+    COMPANY_INSTAGRAM,
+    COMPANY_YOUTUBE,
+    COMPANY_LINKEDIN,
+    COMPANY_GITHUB,
+    COMPANY_GOOGLE_PLAY,
+    COMPANY_APP_STORE,
+    EMAIL_SERVICE,
+    SENDER_MAIL,
+    SENDER_PASSWORD,
+    STRIPE_PRIVATE_KEY,
+} = process.env;
