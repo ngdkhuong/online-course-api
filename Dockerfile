@@ -1,24 +1,31 @@
-# Common build stage
-FROM node:20 as common-build-stage
+FROM node as builder
 
-COPY . ./app
+WORKDIR /usr/src/app
 
-WORKDIR /app
+# Install app dependencies
+COPY package*.json ./
 
-RUN npm install npm@latest -g
+RUN npm ci
 
-EXPOSE 8080
+COPY . . 
 
-# Development build stage
-FROM common-build-stage as development-build-stage
+RUN npm run build
 
-ENV NODE_ENV development
-
-CMD ["npm", "run", "dev"]
-
-# Production build stage
-FROM common-build-stage as production-build-stage
+FROM node:slim
 
 ENV NODE_ENV production
+
+USER node
+
+# Create app directory
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+RUN npm ci --production
+
+COPY --from=builder /usr/src/app/dist ./dist
+
+EXPOSE 8080
 
 CMD ["npm", "run", "start"]

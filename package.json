@@ -2,16 +2,12 @@
   "name": "lms-server",
   "version": "1.0.0",
   "description": "backend for online edu system",
-  "main": "src/start.ts",
+  "main": "src/server.ts",
   "scripts": {
-    "build": "swc src -d dist --source-maps --copy-files",
-    "build:tsc": "tsc && tsc-alias",
-    "deploy:dev": "pm2 start ecosystem.config.js --only dev",
-    "deploy:prod": "yarn run build && pm2 start ecosystem.config.js --only prod",
+    "build": "rm -rf dist/ && tsc",
+    "start": "node dist/server.js",
     "dev": "cross-env NODE_ENV=development nodemon",
-    "start": "yarn run build && cross-env NODE_ENV=production node dist/server.js",
-    "swagger-autogen": "node swagger.js",
-    "test": "jest --forceExit --detectOpenHandles"
+    "swagger-autogen": "node swagger.js"
   },
   "keywords": [],
   "author": "",
@@ -31,8 +27,11 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.4.3",
     "mongoose-unique-validator": "^5.0.1",
+    "morgan": "^1.10.0",
     "nodemailer": "^6.9.14",
     "redis": "^4.6.14",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
     "winston": "^3.13.0",
     "winston-daily-rotate-file": "^5.0.0"
   },

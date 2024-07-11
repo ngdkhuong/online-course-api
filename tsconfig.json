@@ -22,50 +22,50 @@
       "@/*": [
         "*"
       ],
-      "@Admin/*": [
-        "./Admin/*"
+      "@admin/*": [
+        "./admin/*"
       ],
-      "@Authentication/*": [
-        "./Authentication/*"
+      "@auth/*": [
+        "./auth/*"
       ],
-      "@Token/*": [
-        "./Token/*"
+      "@token/*": [
+        "./token/*"
       ],
-      "@Common/*": [
-        "./Common/*"
+      "@common/*": [
+        "./common/*"
       ],
-      "@Config": [
-        "./Config"
+      "@config": [
+        "./config"
       ],
-      "@Course/*": [
-        "./Course/*"
+      "@course/*": [
+        "./course/*"
       ],
-      "@Databases": [
-        "./Databases"
+      "@databases": [
+        "./databases"
       ],
-      "@Exceptions/*": [
-        "./Exceptions/*"
+      "@exceptions/*": [
+        "./exceptions/*"
       ],
-      "@Instructor/*": [
-        "./Instructor/*"
+      "@instructor/*": [
+        "./instructor/*"
       ],
-      "@Middlewares/*": [
-        "./Middlewares/*"
+      "@middlewares/*": [
+        "./middlewares/*"
       ],
-      "@NewsLetter/*": [
-        "./NewsLetter/*"
+      "@newsLetter/*": [
+        "./newsLetter/*"
       ],
-      "@Services/*": [
-        "./Services/*"
+      "@services/*": [
+        "./services/*"
       ],
-      "@Trainee/*": [
-        "./Trainee/*"
+      "@trainee/*": [
+        "./trainee/*"
       ],
-      "@User/*": [
-        "./User/*"
+      "@user/*": [
+        "./user/*"
       ],
-      "@Utils/*": [
-        "./Utils/*"
+      "@utils/*": [
+        "./utils/*"
       ]
     },
     "pretty": true,
@@ -85,7 +85,6 @@
     "src/**/*.ts",
     "src/**/*.json",
     ".env",
-    "swagger.ts",
     "swagger.ts"
   ]
 }
