@@ -1,5 +1,6 @@
-import { config } from 'dotenv';
-config({
+import dotenv from 'dotenv';
+
+dotenv.config({
     path: `.env.${process.env.NODE_ENV || 'development'}.local`,
 });
 
@@ -10,7 +11,6 @@ export const {
     PORT,
     MONGO_URI,
     SECRET_KEY,
-    LOG_FORMAT,
     LOG_DIR,
     ORIGIN,
     EXCHANGE_BASE_URL,

@@ -1,25 +1,21 @@
-import App from '@/app';
-import validateEnv from '@/utils/validateEnv';
-import { dbConnection } from '@/databases/mongo';
+import { dbConnection } from './databases/mongo';
 import { connect, connection } from 'mongoose';
-import http from 'http';
-import { logger } from '@/utils/logger';
-import AuthRoute from '@/auth/auth.route';
+import * as http from 'http';
+import App from './app';
+import { logger } from './utils/logger';
+import validateEnv from './utils/validateEnv';
+import { PORT } from './configs/config';
+// import AuthRoute from '@auth/auth.route';
 
 validateEnv();
 
 try {
-    const app = new App([new AuthRoute()]);
+    const app = new App();
 
     (async function connectToDatabase() {
         connect(dbConnection.url)
             .then(() => {
-                const server = http.createServer(app.app);
-
-                server.listen(app.port, () => {
-                    logger.info(`ENV: ${this.env}`);
-                    logger.info(`Server run on PORT: http://localhost:${this.port}`);
-                });
+                app.listen();
             })
             .catch((err) => logger.error(`Connection to Database failed: ${err}`));
 
