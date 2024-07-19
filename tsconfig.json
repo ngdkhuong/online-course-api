@@ -10,48 +10,11 @@
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "importHelpers": true,
-    "lib": [
-      "es2017",
-      "esnext.asynciterable"
-    ],
     "module": "commonjs",
     "moduleResolution": "node",
     "noEmit": false,
     "outDir": "dist",
     "paths": {
-      "@/*": [
-        "*"
-      ],
-      "@admin/*": [
-        "./admin/*"
-      ],
-      "@auth/*": [
-        "./auth/*"
-      ],
-      "@token/*": [
-        "./token/*"
-      ],
-      "@common/*": [
-        "./common/*"
-      ],
-      "@config": [
-        "./config"
-      ],
-      "@course/*": [
-        "./course/*"
-      ],
-      "@databases": [
-        "./databases"
-      ],
-      "@exceptions/*": [
-        "./exceptions/*"
-      ],
-      "@instructor/*": [
-        "./instructor/*"
-      ],
-      "@middlewares/*": [
-        "./middlewares/*"
-      ],
       "@newsLetter/*": [
         "./newsLetter/*"
       ],
@@ -66,6 +29,9 @@
       ],
       "@utils/*": [
         "./utils/*"
+      ],
+      "@logs/*": [
+        "./logs/*"
       ]
     },
     "pretty": true,
@@ -75,16 +41,5 @@
     "typeRoots": [
       "node_modules/@types"
     ]
-  },
-  "exclude": [
-    "node_modules",
-    "src/http",
-    "src/logs"
-  ],
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.json",
-    ".env",
-    "swagger.ts"
-  ]
+  }
 }
