@@ -18,14 +18,35 @@
       "@newsLetter/*": [
         "./newsLetter/*"
       ],
+      "@auth/*": [
+        "./auth/*"
+      ],
+      "@config/*": [
+        "./config/*"
+      ],
+      "@constants/*": [
+        "./constants/*"
+      ],
+      "@controllers/*": [
+        "./controllers/*"
+      ],
+      "@databases/*": [
+        "./databases/*"
+      ],
+      "@middlewares/*": [
+        "./middlewares/*"
+      ],
+      "@models/*": [
+        "./models/*"
+      ],
+      "@routes/*": [
+        "./routes/*"
+      ],
+      "@interfaces/*": [
+        "./interfaces/*"
+      ],
       "@services/*": [
         "./services/*"
-      ],
-      "@trainee/*": [
-        "./trainee/*"
-      ],
-      "@user/*": [
-        "./user/*"
       ],
       "@utils/*": [
         "./utils/*"
