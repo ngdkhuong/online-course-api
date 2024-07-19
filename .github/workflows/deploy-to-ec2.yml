@@ -34,6 +34,16 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v2
 
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v1
+
+            - name: Login to DockerHub
+              uses: docker/login-action@v1
+              with:
+                  username: ${{ secrets.DOCKER_USERNAME }}
+                  password: ${{ secrets.DOCKER_PASSWORD }}
+
             - name: Deploy to server
               run: |
                   docker pull ${{ secrets.DOCKER_USERNAME }}/online-courses-api:latest
+                  # Add your deployment commands here
