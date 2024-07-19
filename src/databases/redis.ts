@@ -6,7 +6,7 @@ export const redisClient = createClient({
     password: REDIS_PASS,
     socket: {
         host: REDIS_HOST,
-        port: parseInt(REDIS_PORT),
+        port: parseInt(REDIS_PORT ?? '6379'), // Provide a default value if REDIS_PORT is undefined
     },
 });
 

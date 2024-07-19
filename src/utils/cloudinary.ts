@@ -13,7 +13,7 @@ export const uploadImage = async (filePath: string) => {
             folder: 'images',
         });
         return result;
-    } catch (error) {
+    } catch (error: any) {
         throw new Error(`Cloudinary upload error: ${error.message}`);
     }
 };
@@ -25,7 +25,7 @@ export const uploadVideo = async (filePath: string) => {
             folder: 'videos',
         });
         return result;
-    } catch (error) {
+    } catch (error: any) {
         throw new Error(`Cloudinary upload error: ${error.message}`);
     }
 };
