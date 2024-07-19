@@ -10,14 +10,14 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
+# Copy the rest of the application
+COPY . .
+
 # Run the build command
 RUN npm run build
-
-# Copy the rest of the application code
-COPY . .
 
 # Expose the port the app runs on
 EXPOSE 8080
 
 # Define the command to run the app
-CMD ["npm", "start"]
+CMD [ "npm", "node", "./dist/server.js" ]
