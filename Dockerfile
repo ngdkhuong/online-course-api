@@ -1,31 +1,23 @@
-FROM node as builder
+# Use an official Node.js runtime as a parent image
+FROM node:20
 
+# Set the working directory
 WORKDIR /usr/src/app
 
-# Install app dependencies
+# Copy package.json and package-lock.json
 COPY package*.json ./
 
-RUN npm ci
+# Install dependencies
+RUN npm install
 
-COPY . . 
-
+# Run the build command
 RUN npm run build
 
-FROM node:slim
+# Copy the rest of the application code
+COPY . .
 
-ENV NODE_ENV production
-
-USER node
-
-# Create app directory
-WORKDIR /usr/src/app
-
-COPY package*.json ./
-
-RUN npm ci --production
-
-COPY --from=builder /usr/src/app/dist ./dist
-
+# Expose the port the app runs on
 EXPOSE 8080
 
-CMD ["npm", "run", "start"]
+# Define the command to run the app
+CMD ["npm", "start"]
