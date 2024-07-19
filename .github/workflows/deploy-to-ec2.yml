@@ -1,4 +1,4 @@
-name: Build and Deploy to Server
+name: Deploy Node Application
 
 on:
     push:
@@ -8,42 +8,23 @@ on:
 jobs:
     build:
         runs-on: ubuntu-latest
-
         steps:
-            - name: Checkout code
-              uses: actions/checkout@v2
-
-            - name: Set up Docker Buildx
-              uses: docker/setup-buildx-action@v1
-
-            - name: Login to DockerHub
-              uses: docker/login-action@v1
-              with:
-                  username: ${{ secrets.DOCKER_USERNAME }}
-                  password: ${{ secrets.DOCKER_PASSWORD }}
-
-            - name: Build and push Docker image
-              run: |
-                  docker buildx build --push --tag ${{ secrets.DOCKER_USERNAME }}/online-courses-api:latest .
+            - name: Checkout Source
+              uses: actions/checkout@v4
+            - name: Login to docker hub
+              run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+            - name: Build Docker Image
+              run: docker build -t ${{ secrets.DOCKER_USERNAME }}/online-courses-api .
+            - name: Publish Image to docker hub
+              run: docker push  ${{ secrets.DOCKER_USERNAME }}/online-courses-api:latest
 
     deploy:
-        runs-on: self-hosted
         needs: build
-
+        runs-on: self-hosted
         steps:
-            - name: Checkout code
-              uses: actions/checkout@v2
-
-            - name: Set up Docker Buildx
-              uses: docker/setup-buildx-action@v1
-
-            - name: Login to DockerHub
-              uses: docker/login-action@v1
-              with:
-                  username: ${{ secrets.DOCKER_USERNAME }}
-                  password: ${{ secrets.DOCKER_PASSWORD }}
-
-            - name: Deploy to server
-              run: |
-                  docker pull ${{ secrets.DOCKER_USERNAME }}/online-courses-api:latest
-                  # Add your deployment commands here
+            - name: Pull image from docker hub
+              run: docker pull  ${{ secrets.DOCKER_USERNAME }}/online-courses-api:latest
+            - name: Delete old container
+              run: docker rm -f online-courses-container
+            - name: Run Docker Container
+              run: docker run -d -p 8080:8080 --name online-courses-container -e  ${{ secrets.DOCKER_USERNAME }}/online-courses-api
