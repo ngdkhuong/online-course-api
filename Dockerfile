@@ -13,6 +13,9 @@ RUN npm install
 # Copy the rest of the application
 COPY . .
 
+# Copy the .env file
+COPY .env .env
+
 # Run the build command
 RUN npm run build
 
@@ -20,4 +23,4 @@ RUN npm run build
 EXPOSE 8080
 
 # Define the command to run the app
-CMD [ "npm", "node", "./dist/server.js" ]
+CMD [ "node", "dist/server.js" ]
