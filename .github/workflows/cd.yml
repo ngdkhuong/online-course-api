@@ -13,6 +13,9 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v2
 
+            - name: Copy .env file
+              run: echo "${{ secrets.ENV_FILE_CONTENT }}" > .env
+
             - name: Set up Docker Buildx
               uses: docker/setup-buildx-action@v1
 
@@ -21,9 +24,6 @@ jobs:
               with:
                   username: ${{ secrets.DOCKER_USERNAME }}
                   password: ${{ secrets.DOCKER_PASSWORD }}
-
-            - name: Copy .env file
-              run: echo "${{ secrets.ENV_FILE_CONTENT }}" > .env
 
             - name: Build and push Docker image
               run: |
