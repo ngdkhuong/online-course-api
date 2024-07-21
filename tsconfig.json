@@ -16,12 +16,6 @@
       ], // Path mapping for @utils alias
       "@databases/*": [
         "src/databases/*"
-      ], // Path mapping for @databases alias
-      "@newsLetter/*": [
-        "src/newsLetter/*"
-      ],
-      "@auth/*": [
-        "src/auth/*"
       ],
       "@config/*": [
         "src/config/*"
@@ -41,19 +35,19 @@
       "@routes/*": [
         "src/routes/*"
       ],
-      "@interfaces/*": [
-        "src/interfaces/*"
-      ],
       "@services/*": [
         "src/services/*"
       ],
-      "@logs/*": [
-        "src/logs/*"
+      "@types/*": [
+        "src/types/*"
+      ],
+      "@interfaces/*": [
+        "src/interfaces/*"
       ]
     }
   },
   "include": [
-    "src/**/*"
+    "src"
   ], // Include all TypeScript files in the src directory
   "exclude": [
     "node_modules",

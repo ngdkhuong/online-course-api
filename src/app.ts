@@ -1,5 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { errorHandler } from '@middlewares/errorHandler';
+import { sampleRoute } from '@routes/test.route';
 
 const app = express();
 
@@ -17,6 +18,9 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.get('/', (req: Request, res: Response) => {
     res.send('Hello, world!');
 });
+
+// Test route
+app.use('/api/sample', sampleRoute);
 
 // Use error-handling middleware
 app.use(errorHandler);
