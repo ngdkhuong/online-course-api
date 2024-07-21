@@ -40,6 +40,6 @@ jobs:
                   script: |
                       docker pull ${{ secrets.DOCKER_USERNAME }}/online-courses-api:latest
                       docker rm -f online-courses-container || true
-                      docker run -d -p 8080:8080 --name online-courses-container ${{ secrets.DOCKER_USERNAME }}/online-courses-api:latest
+                      docker run -d -p 8080:8080 --env-file .env --name online-courses-container ${{ secrets.DOCKER_USERNAME }}/online-courses-api:latest
                       sudo cp /home/ubuntu/nginx.conf /etc/nginx/nginx.conf
                       sudo systemctl restart nginx
