@@ -66,6 +66,7 @@
     "node-config": "^0.0.2",
     "nodemon": "^3.1.4",
     "rimraf": "^6.0.1",
+    "ts-jest": "^29.2.3",
     "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.10",
     "tsconfig-paths": "^4.2.0",
