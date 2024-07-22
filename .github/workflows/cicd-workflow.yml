@@ -26,9 +26,11 @@ jobs:
             - name: Delete old container
               run: docker rm -f lms-nodejs
             - name: Load environment variables
-              env:
-                  PROD_ENV: ${{ secrets.ENV_FILE_CONTENT }}
-              run: echo "$PROD_ENV" > .env && export $(cat .env | xargs)
+              run: |
+                  echo "${{ secrets.ENV_FILE_CONTENT }}" > .env
+                  set -o allexport
+                  source .env
+                  set -o allexport
             - name: Run docker container
               run: docker run -d -p 8080:8080 --name lms-nodejs \
                   --env-file .env \
