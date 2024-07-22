@@ -1,0 +1,29 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: main
+
+jobs:
+  build:
+    runs-on: [ubuntu-latest]
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+      - name: Login to docker hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} 
+      - name: Build docker image
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/online-courses-api .
+      - name: Publish image to docker hub
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/online-courses-api:latest
+        
+  deploy:
+    needs: build
+    runs-on: self-hosted
+    steps:
+      - name: Pull image from docker hub
+        run: docker pull ${{ secrets.DOCKER_USERNAME }}/online-courses-api:latest
+      - name: Delete old container
+        run: docker rm -f lms-nodejs
+      - name: Run docker container
+        run: docker run -d -p 8080:8080 --name lms-nodejs ${{ secrets.DOCKER_USERNAME }}/online-courses-api
