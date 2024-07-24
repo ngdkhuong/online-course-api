@@ -11,6 +11,7 @@ import { connectRedis } from '@databases/redis';
 
         app.listen(PORT, () => {
             logger.info(`Server is running on port ${PORT}`);
+            logger.info(`API: http://localhost:${PORT}/api-docs`);
         });
     } catch (error) {
         logger.error('Error starting server:', error);

@@ -1,59 +1,82 @@
 {
-    "swagger": "2.0",
+    "openapi": "3.0.0",
     "info": {
+        "title": "Auth API",
         "version": "1.0.0",
-        "title": "REST API",
-        "description": ""
+        "description": "API documentation for authentication routes"
     },
-    "host": "localhost:8080",
-    "basePath": "/",
-    "schemes": [
-        "http"
+    "servers": [
+        {
+            "url": "http://localhost:8080/api"
+        }
     ],
     "paths": {
-        "/signup": {
+        "/auth/register": {
             "post": {
-                "description": "",
-                "parameters": [],
-                "responses": {}
+                "summary": "Register a new user",
+                "tags": [
+                    "Auth"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "username": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User registered successfully"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                }
             }
         },
-        "/login": {
+        "auth/login": {
             "post": {
-                "description": "",
-                "parameters": [],
-                "responses": {}
-            }
-        },
-        "/logout": {
-            "post": {
-                "description": "",
-                "parameters": [],
-                "responses": {}
-            }
-        },
-        "/": {
-            "get": {
-                "description": "",
-                "parameters": [],
-                "responses": {}
-            }
-        },
-        "/{id}": {
-            "get": {
-                "description": "",
-                "parameters": [],
-                "responses": {}
-            },
-            "put": {
-                "description": "",
-                "parameters": [],
-                "responses": {}
-            },
-            "delete": {
-                "description": "",
-                "parameters": [],
-                "responses": {}
+                "summary": "Login a user",
+                "tags": [
+                    "Auth"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "username": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User logged in successfully"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
             }
         }
     }
