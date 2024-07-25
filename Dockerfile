@@ -1,25 +1,13 @@
-#Build stage
-FROM node:alpine AS build
+FROM node:alpine
 
-WORKDIR /app
+WORKDIR /usr/lms-server
 
-COPY package*.json .
+COPY package.json .
 
 RUN npm install
 
 COPY . .
 
 RUN npm run build
-
-#Production stage
-FROM node:alpine AS production
-
-WORKDIR /app
-
-COPY package*.json .
-
-RUN npm ci --only=production
-
-COPY --from=build /app/dist ./dist
 
 CMD ["node", "dist/server.js"]
