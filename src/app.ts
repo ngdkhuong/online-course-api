@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { errorHandler } from '@middlewares/errorHandler';
 import { sampleRoute } from '@routes/test.route';
-import authRoute from '@routes/auth.route';
+// import authRoute from '@routes/auth.route';
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from '../swagger.json';
 
