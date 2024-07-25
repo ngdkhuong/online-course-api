@@ -1,84 +1,50 @@
-import { Response } from 'express';
-import jwt, { SignOptions } from 'jsonwebtoken';
-import { redisClient } from '@databases/redis';
-import { RedisKey } from 'ioredis';
+import jwt from 'jsonwebtoken';
+import { Request, Response } from 'express'; // Assuming you are using Express
 import { JWT_ACCESS_TOKEN_SECRET, JWT_REFRESH_TOKEN_SECRET } from '@config/index';
-import { IUser } from '@interfaces/user.interface';
+import { UserModel } from '@models/user.model';
 
-interface ITokenOptions {
-    expires: Date;
-    maxAge: number;
-    httpOnly: boolean;
-    sameSite: 'lax' | 'strict' | 'none' | undefined;
-    secure?: boolean;
+interface TokenPayload {
+    userId: string;
 }
 
-export class TokenService {
-    private accessTokenExpire: number;
-    private refreshTokenExpire: number;
-    private accessTokenOptions: ITokenOptions;
-    private refreshTokenOptions: ITokenOptions;
+interface TokenResponse {
+    accessToken: string;
+    refreshToken: string;
+}
 
-    constructor() {
-        // parse environment variables to integrate with fallback
-        this.accessTokenExpire = parseInt(process.env.ACCESS_TOKEN_EXPIRE || '300', 10);
-        this.refreshTokenExpire = parseInt(process.env.REFRESH_TOKEN_EXPIRE || '1200', 10);
+class TokenService {
+    private accessTokenSecret = JWT_ACCESS_TOKEN_SECRET as jwt.Secret; // Use environment variables in production
+    private refreshTokenSecret = JWT_REFRESH_TOKEN_SECRET as jwt.Secret; // Use environment variables in production
 
-        // options for cookies
-        this.accessTokenOptions = {
-            expires: new Date(Date.now() + this.accessTokenExpire * 60 * 60 * 1000),
-            maxAge: this.accessTokenExpire * 60 * 60 * 1000,
-            httpOnly: true,
-            sameSite: 'lax',
-        };
+    async generateToken(userId: string, res: Response): Promise<TokenResponse> {
+        const accessToken = jwt.sign({ userId }, this.accessTokenSecret, { expiresIn: '15m' });
+        const refreshToken = jwt.sign({ userId }, this.refreshTokenSecret, { expiresIn: '7d' });
 
-        this.refreshTokenOptions = {
-            expires: new Date(Date.now() + this.refreshTokenExpire * 24 * 60 * 60 * 1000),
-            maxAge: this.refreshTokenExpire * 24 * 60 * 60 * 1000,
-            httpOnly: true,
-            sameSite: 'lax',
-        };
+        // Set tokens in cookies
+        res.cookie('accessToken', accessToken, { httpOnly: true });
+        res.cookie('refreshToken', refreshToken, { httpOnly: true });
+
+        return { accessToken, refreshToken };
     }
 
-    public sendToken(user: IUser, statusCode: number, res: Response) {
-        const accessToken = this.generateAccessToken(user._id.toString());
-        const refreshToken = this.generateRefreshToken(user._id.toString());
+    async verifyToken(refreshToken: string): Promise<string> {
+        try {
+            const decoded = jwt.verify(refreshToken, this.refreshTokenSecret) as TokenPayload;
+            const userId = decoded.userId;
 
-        const redisKey: RedisKey = user._id.toString();
+            // Check if refreshToken exists in the database
+            const tokenExists = await UserModel.findOne({ _id: (decoded as TokenPayload).userId });
+            if (!tokenExists) {
+                throw new Error('Invalid refresh token');
+            }
 
-        // upload session to redis
-        redisClient.set(redisKey, JSON.stringify(user));
-
-        // only set secure to true in production
-        if (process.env.NODE_ENV === 'production') {
-            this.accessTokenOptions.secure = true;
+            // Generate a new accessToken
+            const newAccessToken = jwt.sign({ userId }, this.accessTokenSecret, { expiresIn: '15m' });
+            return newAccessToken;
+        } catch (error) {
+            throw new Error('Token verification failed');
         }
-
-        res.cookie('accessToken', accessToken, this.accessTokenOptions);
-        res.cookie('refreshToken', refreshToken, this.refreshTokenOptions);
-
-        res.status(statusCode).json({
-            success: true,
-            user,
-            accessToken,
-        });
-    }
-
-    private generateAccessToken(userId: string): string {
-        const accessTokenOptions: SignOptions & { userId: string } = {
-            expiresIn: this.accessTokenExpire,
-            userId,
-        };
-        const accessToken = jwt.sign(accessTokenOptions, JWT_ACCESS_TOKEN_SECRET!);
-        return accessToken;
-    }
-
-    private generateRefreshToken(userId: string): string {
-        const refreshTokenOptions: SignOptions & { userId: string } = {
-            expiresIn: this.refreshTokenExpire,
-            userId,
-        };
-        const refreshToken = jwt.sign(refreshTokenOptions, JWT_REFRESH_TOKEN_SECRET!);
-        return refreshToken;
     }
 }
+
+export default new TokenService();

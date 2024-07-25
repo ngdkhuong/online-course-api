@@ -3,7 +3,7 @@ import passport from 'passport';
 import AuthService from '@services/auth.service';
 import HttpStatusCodes from '@utils/HttpStatusCodes';
 import { IUser } from '@interfaces/user.interface';
-import TokenService  from '@services/token.service';
+import TokenService from '@services/token.service';
 import sendMail from '@services/mailer.service';
 
 class AuthController {
@@ -12,7 +12,8 @@ class AuthController {
         try {
             const user: IUser = await AuthService.register(email, password, fullName);
             res.status(HttpStatusCodes.CREATED).json({
-                accessToken: 
+                message: 'User registered successfully',
+                user,
             });
         } catch (error: any) {
             res.status(HttpStatusCodes.UNAUTHORIZED).json({ error: error.message });
@@ -27,7 +28,7 @@ class AuthController {
 
     private async sendVerificationEmail(email: string, otp: string): Promise<void> {
         try {
-            await sendMail(email, otp);
+            await sendMail(email);
         } catch (error: any) {
             throw new Error(`Failed to send verification email: ${error.message}`);
         }

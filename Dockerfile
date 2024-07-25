@@ -1,23 +1,23 @@
 # Use an official Node.js runtime as a parent image
 FROM node:20
 
-# Set the working directory
+# Create app directory
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json
+# Install app dependencies
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+# where available (npm@5+)
 COPY package*.json ./
 
-# Install dependencies
 RUN npm install
 
-# Copy the rest of the application
-COPY . .
+# If you are building your code for production
+RUN npm ci --only=production
 
-# Run the build command
 RUN npm run build
 
-# Expose the port the app runs on
-EXPOSE 8080
+# Bundle app source
+COPY . .
 
-# Define the command to run the app
+EXPOSE 8080
 CMD [ "node", "dist/server.js" ]

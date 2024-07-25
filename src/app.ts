@@ -31,9 +31,6 @@ app.get('/', (req: Request, res: Response) => {
 // Test route
 app.use('/api/sample', sampleRoute);
 
-// Route
-app.use('/api/auth', authRoute);
-
 // Use error-handling middleware
 app.use(errorHandler);
 
