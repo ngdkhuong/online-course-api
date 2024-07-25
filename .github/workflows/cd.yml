@@ -13,7 +13,7 @@ jobs:
         steps:
             - name: Pull Docker image
               run: sudo docker pull sukablyat007/online-courses-api:latest
-            - name: Delete Old docker container
+            - name: Delete Oldsudo docker container
               run: sudo docker rm -f cicd-pipeline-container || true
             - name: Run Docker Container
               run: sudo docker run -d -p 8080:8080 --name cicd-pipeline-container sukablyat007/online-courses-api
