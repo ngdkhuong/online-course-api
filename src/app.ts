@@ -25,7 +25,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Example route
 app.get('/', (req: Request, res: Response) => {
-    res.send('Hello, worlds!');
+    res.send('Hello, worlds !');
 });
 
 // Test route
