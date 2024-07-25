@@ -4,9 +4,8 @@
   "description": "backend for online edu system",
   "main": "src/server.ts",
   "scripts": {
-    "clean": "rimraf dist",
-    "build": "npm run clean && tsc",
-    "start": "node dist/server.js",
+    "build": "rimraf ./dist && tsc",
+    "start": "npm run build && node dist/server.js",
     "dev": "cross-env NODE_ENV=development nodemon",
     "generate-docs": "node src/swagger/swagger.ts",
     "test": "jest --coverage",

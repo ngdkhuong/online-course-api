@@ -18,8 +18,8 @@ WORKDIR /app
 
 COPY package*.json .
 
-RUN npm ci --only=production
+RUN npm ci --only=production && npm cache clean --force
 
 COPY --from=build /app/dist ./dist
 
-CMD ["node", "dist/index.js"]
+CMD ["node", "dist/server.js"]
