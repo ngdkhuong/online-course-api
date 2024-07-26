@@ -1,6 +1,6 @@
 import { createClient } from 'redis';
 import { REDIS_HOST, REDIS_PASS, REDIS_PORT } from '../config';
-import logger from '@utils/logger';
+import logger from '../utils/logger';
 
 export const redisClient = createClient({
     password: REDIS_PASS,

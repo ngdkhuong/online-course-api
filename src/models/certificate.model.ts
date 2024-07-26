@@ -1,4 +1,4 @@
-import { ICertificate } from '@interfaces/certificate.interface';
+import { ICertificate } from '../interfaces/certificate.interface';
 import { Schema, model } from 'mongoose';
 
 const certificateSchema = new Schema<ICertificate>({
