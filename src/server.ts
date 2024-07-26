@@ -1,8 +1,8 @@
-import logger from '@utils/logger';
+import logger from './utils/logger';
 import app from './app';
 import { PORT } from './config';
-import { connectMongoDB } from '@databases/mongo';
-import { connectRedis } from '@databases/redis';
+import { connectMongoDB } from './databases/mongo';
+import { connectRedis } from './databases/redis';
 
 (async function startServer() {
     try {
