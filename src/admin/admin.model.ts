@@ -1,6 +1,6 @@
 import { model, Schema } from 'mongoose';
 import { IAdmin } from './admin.interface';
-import Email from '../user/email.validate';
+import Email from '../user/user.validate';
 import { genSalt, hash } from 'bcryptjs';
 
 const adminSchema = new Schema<IAdmin>(

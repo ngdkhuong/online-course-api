@@ -1,6 +1,6 @@
 import { model, Schema } from 'mongoose';
 import { ITrainee } from './trainee.interface';
-import Email from '../user/email.validate';
+import Email from '../user/user.validate';
 
 const traineeSchema = new Schema<ITrainee>({
     email: {

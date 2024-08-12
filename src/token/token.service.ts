@@ -12,12 +12,14 @@ export const generateTokens = async (tokenPayload: ITokenPayload): Promise<IToke
         // const accessToken = sign(tokenPayload, ACCESS_TOKEN_PRIVATE_KEY, { expiresIn: '14m' });
         const accessToken = sign(tokenPayload, JWT_ACCESS_TOKEN_SECRET || '', { expiresIn: '20d' });
         const refreshToken = sign(tokenPayload, JWT_REFRESH_TOKEN_SECRET || '', { expiresIn: '30d' });
+        // we check if the user already has a refresh token
+        const userId = tokenPayload._id;
 
-        const userToken = await UserToken.findOne({ userId: tokenPayload._id });
+        const userToken = await UserToken.findOne({ userId });
 
-        if (userToken) await userToken.deleteOne();
+        if (userToken) await userToken.deleteOne({ userId });
         // we save refresh token into the Database
-        await new UserToken({ token: refreshToken, userId: tokenPayload._id }).save();
+        await new UserToken({ token: refreshToken, userId }).save();
         return { accessToken, refreshToken };
     } catch (err) {
         throw new HttpException(HttpStatusCodes.INTERNAL_SERVER_ERROR, 'Cant Generate Token');
@@ -34,7 +36,7 @@ export const verifyRefreshToken = (refreshToken: string) => {
         if (err) throw new HttpException(HttpStatusCodes.FORBIDDEN, 'FORBIDDEN : Invalid Refresh Token');
         const { _id, role } = tokenDetails as ITokenPayload;
         const userModel = findUserModelByRole(role);
-        const findUser = (userModel as any).findOne({ _id });
+        const findUser = userModel.findOne({ _id });
         if (!findUser) throw new HttpException(HttpStatusCodes.FORBIDDEN, 'FORBIDDEN : Invalid Refresh Token');
         const accessToken = sign(
             {
