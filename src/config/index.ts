@@ -5,6 +5,7 @@ dotenv.config();
 
 // Access the environment variables
 export const {
+    NODE_ENV,
     PORT,
     MONGO_URI,
     REDIS_PASS,
@@ -24,4 +25,5 @@ export const {
     GOOGLE_CLIENT_SECRET,
     GITHUB_CLIENT_ID,
     GITHUB_CLIENT_SECRET,
+    ORIGIN,
 } = process.env;

@@ -1,57 +1,71 @@
-import { Schema, model } from 'mongoose';
-import { IUser } from '../interfaces/user.interface';
+import mongoose, { Schema, Types } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
-const userSchema = new Schema<IUser>(
-    {
-        email: {
-            type: String,
-            required: true,
-            unique: true,
-        },
-        password: {
-            type: String,
-            required: true,
-        },
-        fullName: {
-            type: String,
-            required: true,
-        },
-        avatar: {
-            public_id: {
-                type: String,
-                default: '',
-            },
-            url: {
-                type: String,
-                default: '',
-            },
-        },
-        numberPhone: {
-            type: String,
-            default: '',
-        },
-        isVerified: {
-            type: Boolean,
-            default: false,
-        },
-        googleId: {
-            type: String,
-            unique: true,
-            sparse: true,
-        },
-        githubId: {
-            type: String,
-            unique: true,
-            sparse: true,
-        },
-        role: {
-            type: String,
-        },
-    },
-    {
-        timestamps: true,
-    },
-);
+export interface IUser {
+    _id: Types.ObjectId;
+    firstName: string;
+    lastName: string;
+    username: string;
+    active: Boolean;
+    email: {
+        address: string;
+        isVerified: Boolean;
+    };
+    password: string;
+    lastLogin: Date;
+    profileImage: string;
+    role: string;
+    isCorrectPassword(password: string): boolean;
+    isModified(field: string): boolean;
+}
 
-export const UserModel = model<IUser>('User', userSchema);
+const UserSchema: Schema<IUser> = new mongoose.Schema({
+    firstName: {
+        type: String,
+        required: true,
+        trim: true,
+        min: 3,
+    },
+    lastName: {
+        type: String,
+        required: true,
+        trim: true,
+        min: 3,
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+        match: [/\S+@\S+\.\S+/, 'is invalid'],
+        trim: true,
+        lowercase: true,
+    },
+    username: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true,
+        lowercase: true,
+    },
+    password: {
+        type: String,
+        minLength: [6, 'Password must be at least 6 characters'],
+        select: false,
+        required: true,
+    },
+});
+
+UserSchema.pre<IUser>('save', function (next) {
+    if (this.isModified('password')) {
+        const salt = bcrypt.genSaltSync(10);
+        const hashedPassword = bcrypt.hashSync(this.password, salt);
+        this.password = hashedPassword;
+    }
+    next();
+});
+
+UserSchema.methods.isCorrectPassword = async function (inputPassword: string): Promise<boolean> {
+    return bcrypt.compareSync(inputPassword, this.password);
+};
+
+export default mongoose.model<IUser>('User', UserSchema);

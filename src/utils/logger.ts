@@ -1,31 +1,70 @@
-import { createLogger, format, transports } from 'winston';
-import path from 'path';
+import { existsSync, mkdirSync } from 'fs';
+import { join } from 'path';
+import winston from 'winston';
+import winstonDaily from 'winston-daily-rotate-file';
 
-const logDirectory = path.join(__dirname, '../logs');
+// logs dir
+const logDir: string = join(__dirname, '../logs');
 
-const logger = createLogger({
-    level: 'info',
-    format: format.combine(
-        format.timestamp({
+if (!existsSync(logDir)) {
+    mkdirSync(logDir);
+}
+
+// Define log format
+const logFormat = winston.format.printf(({ timestamp, level, message }) => `${timestamp} ${level}: ${message}`);
+
+/*
+ * Log Level
+ * error: 0, warn: 1, info: 2, http: 3, verbose: 4, debug: 5, silly: 6
+ */
+const logger = winston.createLogger({
+    format: winston.format.combine(
+        winston.format.timestamp({
             format: 'YYYY-MM-DD HH:mm:ss',
         }),
-        format.errors({ stack: true }),
-        format.splat(),
-        format.json(),
+        logFormat,
     ),
-    // defaultMeta: { service: 'user-service' },
     transports: [
-        new transports.File({ filename: path.join(logDirectory, 'error.log'), level: 'error' }),
-        new transports.File({ filename: path.join(logDirectory, 'combined.log') }),
+        // debug log setting
+        new winstonDaily({
+            datePattern: 'YYYY-MM-DD',
+            dirname: `${logDir}/debug`,
+            // log file /logs/debug/*.log in save
+            filename: `%DATE%.log`,
+            // 30 Days saved
+            json: false,
+
+            level: 'debug',
+            maxFiles: 30,
+            zippedArchive: true,
+        }),
+        // error log setting
+        new winstonDaily({
+            datePattern: 'YYYY-MM-DD',
+            dirname: `${logDir}/error`,
+            // log file /logs/error/*.log in save
+            filename: `%DATE%.log`,
+            // 30 Days saved
+            handleExceptions: true,
+
+            json: false,
+            level: 'error',
+            maxFiles: 30,
+            zippedArchive: true,
+        }),
     ],
 });
 
-if (process.env.NODE_ENV !== 'production') {
-    logger.add(
-        new transports.Console({
-            format: format.combine(format.colorize(), format.simple()),
-        }),
-    );
-}
+logger.add(
+    new winston.transports.Console({
+        format: winston.format.combine(winston.format.splat(), winston.format.colorize()),
+    }),
+);
 
-export default logger;
+const stream = {
+    write: (message: string) => {
+        logger.info(message.substring(0, message.lastIndexOf('\n')));
+    },
+};
+
+export { logger, stream };

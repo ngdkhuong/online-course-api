@@ -1,9 +1,9 @@
 import express, { Request, Response, NextFunction } from 'express';
-import { errorHandler } from './middlewares/errorHandler';
-import { sampleRoute } from './routes/test.route';
+
 // import authRoute from '@routes/auth.route';
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from '../swagger.json';
+import errorMiddleware from 'middlewares/error.middleware';
 
 const app = express();
 
@@ -28,10 +28,7 @@ app.get('/', (req: Request, res: Response) => {
     res.send('Hello, worlds !');
 });
 
-// Test route
-app.use('/api/sample', sampleRoute);
-
 // Use error-handling middleware
-app.use(errorHandler);
+app.use(errorMiddleware);
 
 export default app;
