@@ -1,6 +1,17 @@
 import { logger } from '@utils/logger';
-import { HttpException } from '@utils/http/HttpException';
 import { Request, Response, NextFunction } from 'express';
+import { StatusCodes } from 'http-status-codes';
+
+class HttpException extends Error {
+    public status: StatusCodes;
+    public message: string;
+
+    constructor(status: StatusCodes, message: string) {
+        super(message);
+        this.status = status;
+        this.message = message;
+    }
+}
 
 const errorMiddleware = (error: HttpException, req: Request, res: Response, next: NextFunction) => {
     try {

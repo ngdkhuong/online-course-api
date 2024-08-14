@@ -2,7 +2,6 @@ import { HttpException } from '../utils/http/HttpException';
 import HttpStatusCodes from '../utils/http//HttpStatusCodes';
 import { sign, verify } from 'jsonwebtoken';
 import UserToken from './token.model';
-
 import { findUserModelByRole } from '../user/user.service';
 import { JWT_ACCESS_TOKEN_SECRET, JWT_REFRESH_TOKEN_SECRET } from '../config/index';
 import { ITokenPayload, ITokenService } from './token.interface';

@@ -13,46 +13,44 @@
     "moduleResolution": "node",
     "noEmit": false,
     "outDir": "dist",
+    "resolveJsonModule": true,
     "lib": [
       "ES6",
       "esnext.asynciterable"
     ],
-    "paths": { //"@/*": ["*"],
+    "paths": {
+      "@/*": [
+        "*"
+      ],
       "@admin/*": [
         "./admin/*"
       ],
-      "@auth/*": [
-        "./auth/*"
+      "@enums/*": [
+        "./enums/*"
       ],
-      "@token/*": [
-        "./token/*"
+      "@models/*": [
+        "./models/*"
       ],
-      "@common/*": [
-        "./common/*"
+      "@services/*": [
+        "./services/*"
       ],
       "@config": [
         "./config"
       ],
-      "@course/*": [
-        "./course/*"
+      "@common/*": [
+        "./common/*"
       ],
       "@databases": [
         "./databases"
       ],
-      "@exceptions/*": [
-        "./exceptions/*"
-      ],
-      "@instructor/*": [
-        "./instructor/*"
+      "@controllers/*": [
+        "./controllers/*"
       ],
       "@middlewares/*": [
         "./middlewares/*"
       ],
       "@newsLetter/*": [
         "./newsLetter/*"
-      ],
-      "@services/*": [
-        "./services/*"
       ],
       "@trainee/*": [
         "./trainee/*"
