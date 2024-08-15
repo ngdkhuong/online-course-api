@@ -1,5 +1,5 @@
 import mongoose, { Document } from 'mongoose';
-import { IUser, UserSchema } from './user.model';
+import { IUser, UserSchema } from './User';
 
 export interface ITrainee extends IUser {
     courses: Array<mongoose.Types.ObjectId>;

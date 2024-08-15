@@ -1,9 +1,9 @@
 import express from 'express';
-import AuthController from '@controllers/auth.controller';
+import AuthController from '../controllers/Auth';
 // import PasswordResetTokenController from '../controllers/PasswordResetToken';
 // import authenticated from '../middleware/permissions/isAuthenticated';
-import isAuthenticated from '@middlewares/isAuthenticated';
-import rateLimiter from '@middlewares/rateLimit';
+import isAuthenticated from '../middlewares/isAuthenticated';
+import rateLimiter from '../middlewares/rateLimit';
 
 const router = express.Router();
 

@@ -18,6 +18,9 @@
       "ES6",
       "esnext.asynciterable"
     ],
+    "strict": true /* Enable all strict type-checking options. */,
+    "skipLibCheck": true /* Skip type checking all .d.ts files. */,
+    "jsx": "react",
     "paths": {
       "@/*": [
         "*"
@@ -37,6 +40,9 @@
       "@config": [
         "./config"
       ],
+      "@controllers": [
+        "./controllers"
+      ],
       "@common/*": [
         "./common/*"
       ],
@@ -49,14 +55,8 @@
       "@middlewares/*": [
         "./middlewares/*"
       ],
-      "@newsLetter/*": [
-        "./newsLetter/*"
-      ],
-      "@trainee/*": [
-        "./trainee/*"
-      ],
-      "@user/*": [
-        "./user/*"
+      "@test/*": [
+        "./test/*"
       ],
       "@utils/*": [
         "./utils/*"

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import UserServices from '@services/user.service';
+import UserServices from '../services/user.service';
 
 const login = async (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = req.body;

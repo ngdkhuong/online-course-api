@@ -1,6 +1,6 @@
 import mongoose, { Document } from 'mongoose';
-import TraineeSchema, { ITrainee } from './trainee.model';
-import User from './user.model';
+import TraineeSchema, { ITrainee } from './Trainee';
+import User from './User';
 
 const options = { discriminatorKey: 'kind' };
 

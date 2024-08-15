@@ -5,18 +5,18 @@ export interface IUser {
     firstName: string;
     lastName: string;
     email: string;
-    userName: string;
-    passwordHash: string;
+    username: string;
+    password: string;
     __t: string;
 
-    isCorrectPassword(passwordHash: string): boolean;
+    isCorrectPassword(password: string): boolean;
 }
 
 export interface IUserModel extends IUser, Document {}
 
 export class UserSchema extends Schema {
-    constructor({}: Object = {}, options: Object = {}) {
-        super({}, options);
+    constructor(object: any, options: Object = {}) {
+        super(object, options);
         this.add({
             firstName: { type: String, required: true, trim: true },
             lastName: { type: String, required: true, trim: true },
@@ -28,7 +28,15 @@ export class UserSchema extends Schema {
                 trim: true,
                 lowercase: true,
             },
-            userName: { type: String, required: true, unique: true, trim: true, lowercase: true },
+            username: {
+                type: String,
+                required: true,
+                trim: true,
+                lowercase: true,
+                default: function () {
+                    return (this as any).firstName + ' ' + (this as any).lastName;
+                },
+            },
             password: { type: String, required: true },
         });
     }

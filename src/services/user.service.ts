@@ -1,8 +1,8 @@
 import crypto from 'crypto';
-import PasswordResetToken from '@models/resetPassword.model';
-import User, { IUserModel } from '@models/user.model';
+import PasswordResetToken from '../models/ResetPasswordToken';
+import User, { IUserModel } from '../models/User';
 import { createRefreshToken, createAccessToken, verifyRefreshToken, decodeToken, TokenPayload } from './token.service';
-import { UserTypesNames, UserType } from '@/enums/UserType';
+import { UserTypesNames, UserType } from '../enums/UserType';
 
 interface AuthResponse {
     refreshToken?: string;

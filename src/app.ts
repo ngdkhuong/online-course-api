@@ -1,8 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
-import { NODE_ENV, ORIGIN, PORT } from '@config';
-import { logger } from '@utils/logger';
+import { NODE_ENV, ORIGIN, PORT } from './config';
 import morgan from 'morgan';
-import { stream } from '@utils/logger';
+import { stream } from './utils/logger';
 import cors from 'cors';
 import hpp from 'hpp';
 import helmet from 'helmet';
@@ -14,9 +13,11 @@ import swaggerUi from 'swagger-ui-express';
 import { version } from '../package.json';
 
 // Routes
-import IndividualTraineeRouter from './routes/individualTrainee.route';
-import CorporateTraineeRouter from './routes/corporateTrainee.route';
-import AuthRouter from './routes/auth.route';
+import IndividualTraineeRouter from './routes/IndividualTrainee';
+import CorporateTraineeRouter from './routes/CorporateTrainee';
+import AuthRouter from './routes/Auth';
+import InstructorRouter from './routes/Instructor';
+
 import { StatusCodes } from 'http-status-codes';
 
 const app = express();
@@ -44,16 +45,8 @@ app.use((req, res, next) => {
 
 app.use(
     cors({
+        origin: true,
         credentials: true,
-        optionsSuccessStatus: 200,
-        origin: (origin, callback) => {
-            const allowedOrigins = ['http://localhost:8000', 'http://127.0.0.1:8000'];
-            if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-                callback(null, true);
-            } else {
-                callback(new Error('Not allowed by CORS'));
-            }
-        },
     }),
 );
 
@@ -70,6 +63,7 @@ app.use('/assets', express.static(path.join(__dirname, 'public/assets')));
 app.use('/api/auth', AuthRouter);
 app.use('/api/individual-trainees', IndividualTraineeRouter);
 app.use('/api/corporate-trainees', CorporateTraineeRouter);
+app.use('/api/instructors', InstructorRouter);
 
 const options: swaggerJSDoc.Options = {
     apis: ['src/routes/*.route.ts', 'src/dtos/*.dto.ts'],
@@ -104,6 +98,15 @@ const options: swaggerJSDoc.Options = {
         servers: [{ url: 'http://localhost:3000' }],
     },
 };
+
+/* --- Basic Routes --- */
+// Health Check
+app.get('/ping', (req, res) => {
+    return res.status(StatusCodes.OK).json({ message: 'pong' });
+});
+app.get('/test', async (_req, res) => {
+    res.status(StatusCodes.OK).json({ message: 'Hello World' });
+});
 
 const specs = swaggerJSDoc(options);
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));

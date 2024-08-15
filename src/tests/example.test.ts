@@ -1,17 +1,23 @@
-import request from 'supertest';
-import app from '../app'; // Assuming your Express app is exported from this file
+// This in example of how to write test for your API
 
-describe('Example API Tests', () => {
-    it('should return a 200 status code and "Hello, World!" message', async () => {
-        const response = await request(app).get('/api/hello');
+import { disconnectDBForTesting, connectDBForTesting } from '../utils/testUtilities';
 
-        expect(response.status).toBe(200);
-        expect(response.body.message).toBe('Hello, World!');
+import supertest from 'supertest';
+import app from '../app';
+const request = supertest(app);
+
+describe('Example API', () => {
+    beforeAll(async () => {
+        await connectDBForTesting();
+    });
+    afterAll(async () => {
+        await disconnectDBForTesting();
     });
 
-    it('should return a 404 status code for an invalid route', async () => {
-        const response = await request(app).get('/api/invalid');
-
-        expect(response.status).toBe(404);
+    describe('GET /api/example', () => {
+        it('should return 200 OK', async () => {
+            const response = await request.get('/test');
+            expect(response.status).toBe(200);
+        });
     });
 });

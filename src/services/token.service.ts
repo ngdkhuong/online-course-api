@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
-import User, { IUserModel } from '@models/user.model';
-import { UserType, UserTypesNames } from '@/enums/UserType';
+import User, { IUserModel } from '../models/User';
+import { UserType, UserTypesNames } from '../enums/UserType';
 import { StatusCodes } from 'http-status-codes';
 
 export interface TokenPayload extends Object {
