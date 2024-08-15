@@ -25,7 +25,7 @@ class CorporateTraineeSchema extends TraineeSchema {
             corporate: { type: String, required: true, trim: true },
             expiredAt: { type: Date, required: true },
         });
-        this.virtual('status').get(function () {
+        this.virtual('status').get(function (this: ICorporateTrainee) {
             if (this.expiredAt < new Date()) {
                 return status.expired;
             }

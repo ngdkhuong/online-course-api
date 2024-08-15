@@ -33,11 +33,16 @@ export class UserSchema extends Schema {
                 required: true,
                 trim: true,
                 lowercase: true,
-                default: function () {
-                    return (this as any).firstName + ' ' + (this as any).lastName;
-                },
             },
             password: { type: String, required: true },
+        });
+
+        this.pre('save', function (next) {
+            if (this.isModified('firstName') || this.isModified('lastName')) {
+                this.username = (this as any).firstName + ' ' + (this as any).lastName;
+            }
+
+            next();
         });
     }
 }

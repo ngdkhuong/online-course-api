@@ -10,7 +10,6 @@ import cookieParser from 'cookie-parser';
 import path from 'path';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import { version } from '../package.json';
 
 // Routes
 import IndividualTraineeRouter from './routes/IndividualTrainee';
@@ -19,6 +18,7 @@ import AuthRouter from './routes/Auth';
 import InstructorRouter from './routes/Instructor';
 
 import { StatusCodes } from 'http-status-codes';
+import errorMiddleware from './middlewares/errorMiddleware';
 
 const app = express();
 
@@ -87,7 +87,7 @@ const options: swaggerJSDoc.Options = {
             },
             termsOfService: 'http://swagger.io/terms/',
             title: 'Swagger Courses API',
-            version: version,
+            version: '1.0.0',
         },
         openapi: '3.0.0',
         security: [
@@ -114,5 +114,7 @@ app.get('/swagger.json', (req: Request, res: Response) => {
     res.setHeader('Content-Type', 'application/json');
     res.send(specs);
 });
+
+app.use(errorMiddleware);
 
 export default app;

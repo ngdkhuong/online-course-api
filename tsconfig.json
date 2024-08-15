@@ -1,78 +1,19 @@
 {
   "compilerOptions": {
-    "allowJs": true,
-    "allowSyntheticDefaultImports": true,
-    "baseUrl": "src",
-    "declaration": true,
-    "emitDecoratorMetadata": true,
-    "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "forceConsistentCasingInFileNames": true,
-    "importHelpers": true,
+    "target": "es6",
     "module": "commonjs",
-    "moduleResolution": "node",
-    "noEmit": false,
     "outDir": "dist",
-    "resolveJsonModule": true,
-    "lib": [
-      "ES6",
-      "esnext.asynciterable"
-    ],
-    "strict": true /* Enable all strict type-checking options. */,
-    "skipLibCheck": true /* Skip type checking all .d.ts files. */,
-    "jsx": "react",
-    "paths": {
-      "@/*": [
-        "*"
-      ],
-      "@admin/*": [
-        "./admin/*"
-      ],
-      "@enums/*": [
-        "./enums/*"
-      ],
-      "@models/*": [
-        "./models/*"
-      ],
-      "@services/*": [
-        "./services/*"
-      ],
-      "@config": [
-        "./config"
-      ],
-      "@controllers": [
-        "./controllers"
-      ],
-      "@common/*": [
-        "./common/*"
-      ],
-      "@databases": [
-        "./databases"
-      ],
-      "@controllers/*": [
-        "./controllers/*"
-      ],
-      "@middlewares/*": [
-        "./middlewares/*"
-      ],
-      "@test/*": [
-        "./test/*"
-      ],
-      "@utils/*": [
-        "./utils/*"
-      ]
-    },
-    "pretty": true,
-    "sourceMap": true,
-    "typeRoots": [
-      "node_modules/@types"
-    ]
+    "rootDir": "src",
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
   },
   "include": [
-    "src"
-  ], // Include all TypeScript files in the src directory
+    "src/**/*"
+  ],
   "exclude": [
+    "src/types/*.ts",
     "node_modules",
-    "dist"
-  ] // Exclude node_modules and dist directories
+    ".vscode"
+  ]
 }

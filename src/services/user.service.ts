@@ -71,7 +71,7 @@ export default class UserServices {
                 throw new Error();
             }
 
-            user.passwordHash = newPassword;
+            user.password = newPassword;
 
             await user.save();
         } catch (error) {
@@ -86,7 +86,7 @@ export default class UserServices {
                 throw new Error();
             }
 
-            user.passwordHash = newPassword;
+            user.password = newPassword;
 
             await user.save();
         } catch (error) {

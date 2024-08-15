@@ -24,4 +24,39 @@ const listCorporateTrainees = async (req: Request, res: Response, next: NextFunc
     );
 };
 
-export default { createCorporateTrainee, listCorporateTrainees };
+const readCorporateTrainee = async (req: Request, res: Response, next: NextFunction) => {
+    const { corporateTraineeId } = req.params;
+
+    return (
+        CorporateTrainee.findById(corporateTraineeId)
+            // .populate('courses')
+            .then((corporateTrainee) => res.status(StatusCodes.OK).json({ corporateTrainee }))
+            .catch((error) => res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error }))
+    );
+};
+
+const updateCorporateTrainee = async (req: Request, res: Response, next: NextFunction) => {
+    const { corporateTraineeId } = req.params;
+
+    return CorporateTrainee.findById(corporateTraineeId)
+        .then((corporateTrainee) => {
+            if (corporateTrainee) {
+                corporateTrainee.set(req.body);
+
+                return corporateTrainee
+                    .save()
+                    .then((corporateTrainee) => res.status(StatusCodes.CREATED).json({ corporateTrainee }))
+                    .catch((error) => res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error }));
+            } else {
+                return res.status(StatusCodes.NOT_FOUND).json({ message: 'not found' });
+            }
+        })
+        .catch((error) => res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error }));
+};
+
+export default {
+    createCorporateTrainee,
+    listCorporateTrainees,
+    readCorporateTrainee,
+    updateCorporateTrainee,
+};

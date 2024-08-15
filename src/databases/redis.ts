@@ -1,4 +1,4 @@
-import { logger } from 'utils/logger';
+import { logger } from '../utils/logger';
 import { REDIS_HOST, REDIS_PASS, REDIS_PORT } from '../config/index';
 import { createClient } from 'redis';
 
