@@ -33,6 +33,9 @@ export class UserSchema extends Schema {
                 required: true,
                 trim: true,
                 lowercase: true,
+                default: function () {
+                    return `${this.firstName} ${this.lastName}`;
+                },
             },
             password: { type: String, required: true },
         });

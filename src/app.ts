@@ -16,6 +16,7 @@ import IndividualTraineeRouter from './routes/IndividualTrainee';
 import CorporateTraineeRouter from './routes/CorporateTrainee';
 import AuthRouter from './routes/Auth';
 import InstructorRouter from './routes/Instructor';
+import CourseRouter from './routes/Course';
 
 import { StatusCodes } from 'http-status-codes';
 import errorMiddleware from './middlewares/errorMiddleware';
@@ -64,6 +65,7 @@ app.use('/api/auth', AuthRouter);
 app.use('/api/individual-trainees', IndividualTraineeRouter);
 app.use('/api/corporate-trainees', CorporateTraineeRouter);
 app.use('/api/instructors', InstructorRouter);
+app.use('/api/courses', CourseRouter);
 
 const options: swaggerJSDoc.Options = {
     apis: ['src/routes/*.route.ts', 'src/dtos/*.dto.ts'],

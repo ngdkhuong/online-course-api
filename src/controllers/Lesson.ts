@@ -1,0 +1,23 @@
+import { NextFunction, Request, Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
+import Course from '../models/Course';
+import Lesson from '../models/Lesson';
+
+const createLesson = async (req: Request, res: Response, _next: NextFunction) => {
+    const courseId = req.params.courseId;
+    const lesson = new Lesson({
+        ...req.body,
+    });
+    lesson
+        .save()
+        .then((lesson) => {
+            Course.findByIdAndUpdate(courseId, { $push: { lessons: lesson._id } }).then(() => {
+                res.status(StatusCodes.CREATED).json({ lesson });
+            });
+        })
+        .catch((error) => res.status(StatusCodes.BAD_REQUEST).json({ error: error.message }));
+};
+
+export default {
+    createLesson,
+};

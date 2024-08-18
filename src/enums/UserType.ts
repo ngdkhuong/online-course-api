@@ -7,7 +7,7 @@ export enum UserType {
 }
 
 export const UserTypesNames = new Map<String, UserType>([
-    ['GUEST', UserType.GUEST],
+    ['Guest', UserType.GUEST],
     ['Admin', UserType.ADMIN],
     ['Instructor', UserType.INSTRUCTOR],
     ['IndividualTrainee', UserType.INDIVIDUAL_TRAINEE],

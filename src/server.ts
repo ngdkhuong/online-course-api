@@ -1,11 +1,11 @@
 import { NODE_ENV, PORT } from './config';
-import { connectRedis } from './databases/redis';
 import { connectDB } from './databases/db';
 import { logger } from './utils/logger'; // Update the import path
 import http from 'http';
 
 import app from './app'; // Import the App class from app.ts
 import { connection } from 'mongoose';
+import { redis } from './databases/redis';
 
 // import { AuthRoute } from './routes/authRoute'; // Import the missing AuthRoute
 
@@ -18,7 +18,7 @@ import { connection } from 'mongoose';
         logger.info(`📃 API on the http://localhost:${PORT}/docs`);
         logger.info(`=================================`);
         connectDB();
-        connectRedis();
+        redis;
     });
 
     // Handle database connection events

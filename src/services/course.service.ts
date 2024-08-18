@@ -1,0 +1,52 @@
+// search for courses by name
+import fs from 'fs';
+import axios from 'axios';
+import { ICourseModel } from '../models/Course';
+// import Promotion, { PromotionStatus } from '../models/Promotion';
+
+/**
+ * Given a country name, return it's currency code
+ *
+ * @param countryName
+ * @returns currency code
+ * @throws Error if country name is not found
+ */
+export const getCurrencyCode = async (countryName: string): Promise<string> => {
+    const data = fs.readFileSync('src/data/country-currency.json', 'utf8');
+    const currencies = JSON.parse(data);
+
+    for (const currency of currencies) {
+        if (currency.CountryCode.lowerCase() === countryName.toLowerCase()) {
+            return currency.Code;
+        }
+    }
+
+    const defaultCountry = await axios
+        .get('https://ipapi.co/json/')
+        .then((res) => {
+            return res.data.country_code;
+        })
+        .catch((error) => {
+            console.error(error);
+            return 'us';
+        });
+
+    return defaultCountry.toUpperCase();
+};
+
+export const getCurrencyRate = async (baseCurrency: string, currencyCode: string): Promise<number> => {
+    const API_URL = `https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/${baseCurrency.toLowerCase()}/${currencyCode.toLowerCase()}.json`;
+
+    const response = await axios.get(API_URL);
+    return response.data[currencyCode.toLowerCase()];
+};
+
+export const getCurrencyRateFromCache = async (currencyCode: string, baseCurrency: string): Promise<number> => {
+    const data = fs.readFileSync('src/media/currency-rates.json', 'utf8');
+    const currencyRates = JSON.parse(data);
+    if (currencyRates[currencyCode]) {
+        return currencyRates[currencyCode];
+    } else {
+        return await getCurrencyRate(currencyCode, baseCurrency);
+    }
+};

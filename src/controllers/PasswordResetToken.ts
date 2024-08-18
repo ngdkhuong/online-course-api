@@ -32,7 +32,7 @@ const sendPasswordResetToken = async (req: Request, res: Response) => {
                 return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
             });
     } catch (error) {
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error });   
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error });
     }
 };
 
@@ -65,4 +65,7 @@ const validatePasswordResetToken = async (req: Request, res: Response) => {
     }
 };
 
-export default { sendPasswordResetToken, validatePasswordResetToken };
+export default {
+    sendPasswordResetToken,
+    validatePasswordResetToken,
+};

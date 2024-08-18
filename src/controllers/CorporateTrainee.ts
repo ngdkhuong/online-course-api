@@ -54,9 +54,22 @@ const updateCorporateTrainee = async (req: Request, res: Response, next: NextFun
         .catch((error) => res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error }));
 };
 
+const deleteCorporateTrainee = async (req: Request, res: Response, next: NextFunction) => {
+    const corporateTraineeId = req.params.corporateTraineeId;
+
+    return CorporateTrainee.findByIdAndDelete(corporateTraineeId)
+        .then((corporateTrainee) =>
+            corporateTrainee
+                ? res.status(StatusCodes.CREATED).json({ corporateTrainee, message: 'Deleted' })
+                : res.status(StatusCodes.NOT_FOUND).json({ message: 'not found' }),
+        )
+        .catch((error) => res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error }));
+};
+
 export default {
     createCorporateTrainee,
     listCorporateTrainees,
     readCorporateTrainee,
     updateCorporateTrainee,
+    deleteCorporateTrainee,
 };

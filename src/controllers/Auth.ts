@@ -1,6 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import UserServices from '../services/user.service';
+import { redis } from '../databases/redis';
+import { IUserModel } from '../models/User';
+import { verifyRefreshToken } from '../services/token.service';
 
 const login = async (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = req.body;
@@ -42,11 +45,22 @@ const refresh = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const logout = async (req: Request, res: Response, next: NextFunction) => {
+    const refreshToken = req.cookies?.jwt;
+
+    const { id: userId }: IUserModel = await verifyRefreshToken(refreshToken as string);
+
     if (!req.cookies?.jwt) {
         return res.status(StatusCodes.UNAUTHORIZED).json({ error: 'Missing refresh token' });
     }
-    res.clearCookie('jwt', { httpOnly: true });
-    res.status(StatusCodes.OK).json({ message: 'Logout successful' });
+
+    try {
+        // Delete user ID from Redis
+        await redis.del(userId);
+        res.clearCookie('jwt', { httpOnly: true });
+        res.status(StatusCodes.OK).json({ message: 'Logout successful' });
+    } catch (error) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Failed to delete user ID from Redis' });
+    }
 };
 
 const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
@@ -58,7 +72,8 @@ const resetPassword = async (req: Request, res: Response, next: NextFunction) =>
 };
 
 const changePassword = async (req: Request, res: Response, next: NextFunction) => {
-    const { userId, oldPassword, newPassword } = req.body;
+    const { userId } = req.params;
+    const { oldPassword, newPassword } = req.body;
 
     return UserServices.changePassword(userId, oldPassword, newPassword)
         .then(() => res.status(StatusCodes.OK).json({ success: true }))

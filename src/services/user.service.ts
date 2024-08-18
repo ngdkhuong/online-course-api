@@ -3,6 +3,7 @@ import PasswordResetToken from '../models/ResetPasswordToken';
 import User, { IUserModel } from '../models/User';
 import { createRefreshToken, createAccessToken, verifyRefreshToken, decodeToken, TokenPayload } from './token.service';
 import { UserTypesNames, UserType } from '../enums/UserType';
+import { redis } from '../databases/redis';
 
 interface AuthResponse {
     refreshToken?: string;
@@ -22,10 +23,14 @@ export default class UserServices {
                 });
             }
 
+            const accessToken = createAccessToken(user);
+            const refreshToken = await createRefreshToken(user);
+            const userType = UserTypesNames.get(user.__t) as UserType;
+
             resolve({
-                accessToken: createAccessToken(user),
-                refreshToken: createRefreshToken(user),
-                userType: UserTypesNames.get(user.__t) as UserType,
+                accessToken,
+                refreshToken,
+                userType,
             });
         });
     }
@@ -83,11 +88,11 @@ export default class UserServices {
         try {
             const user = await User.findById(userId);
             if (!user || !user.isCorrectPassword(oldPassword)) {
-                throw new Error();
+                throw new Error('Invalid user or password');
             }
 
             user.password = newPassword;
-
+            await redis.set(userId, JSON.stringify(user));
             await user.save();
         } catch (error) {
             throw new Error('Failed to change password');
