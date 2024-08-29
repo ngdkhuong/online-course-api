@@ -23,5 +23,5 @@ export const {
     GOOGLE_CLIENT_SECRET = 'your_client_secret',
     GITHUB_CLIENT_ID = 'your_client_id',
     GITHUB_CLIENT_SECRET = 'your_client_secret',
-    ORIGIN = 'http://localhost:3000',
+    ORIGIN = 'http://localhost:5173',
 } = process.env;

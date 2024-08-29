@@ -16,7 +16,7 @@ export const createAccessToken = (user: IUserModel): string => {
             userType: UserTypesNames.get(user.__t),
         },
         process.env.JWT_ACCESS_TOKEN_SECRET as jwt.Secret,
-        { expiresIn: '15m' }, // TODO: change to 15m and handle expiration in frontend
+        { expiresIn: '15d' }, // TODO: change to 15m and handle expiration in frontend
     );
 };
 
@@ -29,7 +29,7 @@ export const createRefreshToken = (user: IUserModel): Promise<string> => {
                 id: user._id,
             },
             process.env.JWT_REFRESH_TOKEN_SECRET as jwt.Secret,
-            { expiresIn: '7d' },
+            { expiresIn: '30d' },
             (err, token) => {
                 if (err) {
                     reject(err);

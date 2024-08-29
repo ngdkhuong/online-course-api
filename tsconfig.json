@@ -15,5 +15,5 @@
     "src/types/*.ts",
     "node_modules",
     ".vscode"
-  ]
+  ],
 }

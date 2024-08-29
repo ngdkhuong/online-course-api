@@ -22,7 +22,7 @@ export const getCurrencyCode = async (countryName: string): Promise<string> => {
     }
 
     const defaultCountry = await axios
-        .get('https://ipapi.co/json/')
+        .get(`https://v6.exchangerate-api.com/v6/${process.env.CURRENCY_RATE_LKEY}/latest/USD`)
         .then((res) => {
             return res.data.country_code;
         })
@@ -35,10 +35,15 @@ export const getCurrencyCode = async (countryName: string): Promise<string> => {
 };
 
 export const getCurrencyRate = async (baseCurrency: string, currencyCode: string): Promise<number> => {
-    const API_URL = `https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/${baseCurrency.toLowerCase()}/${currencyCode.toLowerCase()}.json`;
+    const API_URL = `https://v6.exchangerate-api.com/v6/${process.env.CURRENCY_RATE_LKEY}/pair/${baseCurrency}/${currencyCode}`;
 
-    const response = await axios.get(API_URL);
-    return response.data[currencyCode.toLowerCase()];
+    try {
+        const response = await axios.get(API_URL);
+        return response.data.conversion_rate;
+    } catch (error) {
+        console.error('Error fetching currency rate:', error);
+        throw new Error('Could not fetch currency rate');
+    }
 };
 
 export const getCurrencyRateFromCache = async (currencyCode: string, baseCurrency: string): Promise<number> => {

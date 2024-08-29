@@ -16,7 +16,13 @@ export interface ILessonModel extends ILesson, Document {}
 
 const lessonSchema = new mongoose.Schema({
     title: { type: String, required: true },
-    exercises: [{ type: mongoose.Types.ObjectId, ref: 'Exercise', default: [] }],
+    exercises: [
+        {
+            type: mongoose.Types.ObjectId,
+            ref: 'Exercise',
+            default: [],
+        },
+    ],
     totalHours: { type: Number, required: true },
     video: {
         title: { type: String },

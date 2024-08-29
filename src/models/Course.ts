@@ -3,10 +3,12 @@ import mongoose, { Document, Schema } from 'mongoose';
 import Rating from './Rating';
 import { getVideoThumbnailUrl, isValidVideoLink } from '../services/video.service';
 import Lesson from './Lesson';
+import uniqueValidator from 'mongoose-unique-validator';
+import mongoose_fuzzy_searching, { MongoosePluginModel } from '@imranbarbhuiya/mongoose-fuzzy-searching';
 
 export enum CourseStatus {
     DRAFT = 'draft',
-    PUBLISHED = 'published',
+    PUBLISHED = 'published', 
     CLOSED = 'closed',
 }
 
@@ -35,31 +37,42 @@ export interface ICourse {
 
 export interface ICourseModel extends ICourse, Document {}
 
-const courseSchema = new Schema({
-    title: { type: String, required: true, trim: true },
-    description: { type: String, required: true, trim: true },
-    instructor: { type: Schema.Types.ObjectId, ref: 'Instructor', required: true },
-    subject: { type: String, required: true, trim: true },
-    price: { type: Number, required: true },
-    averageRating: {
-        type: Number,
-        min: 0,
-        max: 5,
-        default: 0,
-    },
-    ratings: [{ type: Schema.Types.ObjectId, ref: 'Rating' }],
-    totalHours: { type: Number, default: 10 },
-    enrollmentsCount: { type: Number, default: 0 },
-    discount: { type: Number, default: 0 },
-    activePromotion: { type: mongoose.Types.ObjectId, ref: 'Promotion', default: null },
-    preview: {
-        type: String,
-        validate: {
-            validator: isValidVideoLink,
-            message: 'Invalid URL, must be a valid YouTube link',
+const courseSchema = new Schema(
+    {
+        title: { type: String, required: true, trim: true },
+        description: { type: String, required: true, trim: true },
+        instructor: { type: Schema.Types.ObjectId, ref: 'Instructor', required: true },
+        subject: { type: String, required: true, trim: true },
+        price: { type: Number, required: true },
+        averageRating: {
+            type: Number,
+            min: 0,
+            max: 5,
+            default: 0,
+        },
+        ratings: [{ type: Schema.Types.ObjectId, ref: 'Rating', default: [] }],
+        totalHours: { type: Number, default: 10 },
+        enrollmentsCount: { type: Number, default: 0 },
+        discount: { type: Number, default: 0 },
+        activePromotion: { type: mongoose.Types.ObjectId, ref: 'Promotion', default: null },
+        preview: {
+            type: String,
+            validate: {
+                validator: isValidVideoLink,
+                message: 'Invalid URL, must be a valid YouTube link',
+            },
+        },
+        lessons: [{ type: mongoose.Types.ObjectId, ref: 'Lesson', default: [] }],
+        status: {
+            type: String,
+            enum: Object.values(CourseStatus),
+            default: CourseStatus.DRAFT,
         },
     },
-});
+    {
+        timestamps: true,
+    },
+);
 
 courseSchema.virtual('thumbnail').get(function (this: ICourseModel) {
     return getVideoThumbnailUrl(this.preview);
@@ -93,6 +106,23 @@ courseSchema.methods.reOpen = async function (this: ICourseModel) {
     await this.save();
 };
 
+courseSchema.plugin(uniqueValidator, { message: 'Course is already taken.' });
+
+courseSchema.plugin(mongoose_fuzzy_searching, {
+    fields: [
+        {
+            name: 'title',
+            minSize: 3,
+            prefixOnly: true,
+        },
+        {
+            name: 'subject',
+            minSize: 3,
+            prefixOnly: true,
+        },
+    ],
+});
+
 courseSchema.pre<ICourseModel>('save', async function (next) {
     const course = this as ICourseModel;
     const lessons = await Lesson.find({ _id: { $in: course.lessons } });
@@ -120,6 +150,6 @@ courseSchema.post('findOneAndUpdate', async function () {
     await course.save();
 });
 
-const Course = mongoose.model<ICourseModel>('Course', courseSchema);
+const Course = mongoose.model<ICourseModel>('Course', courseSchema) as MongoosePluginModel<ICourseModel>;
 
 export default Course;
