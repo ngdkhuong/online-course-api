@@ -2,14 +2,14 @@ import mongoose, { Document } from 'mongoose';
 import Course, { ICourseModel } from './Course';
 import Lesson from './Lesson';
 
-// import createCertificate from '../services/certificateService';
+import createCertificate from '../services/certificate.service';
 import IndividualTrainee from './IndividualTrainee';
 import { sendCertificateEmail } from '../services/emails/sendCertificateEmail';
 import CorporateTrainee from './CorporateTrainee';
 import Instructor from './Instructor';
 import { sendEnrollmentEmail } from '../services/emails/sendEnrollmentEmail';
-// import Settlement from './Settlement';
-// import { getCoursePriceAfterPromotion } from '../services/CourseServices';
+import Settlement from './Settlement';
+import { getCoursePriceAfterPromotion } from '../services/course.service';
 
 interface IExerciseStatus {
     exerciseId: mongoose.Types.ObjectId;
@@ -29,7 +29,7 @@ export const exerciseStatusSchema = new mongoose.Schema({
 });
 
 interface ILessonStatus {
-    lessonId: mongoose.Types.ObjectId;
+    lessonId: string | mongoose.Types.ObjectId;
     isVideoWatched: boolean;
     exercisesStatus: Array<IExerciseStatus>;
 }
@@ -64,7 +64,7 @@ export interface IEnrollment {
 
 export interface IEnrollmentModel extends IEnrollment, Document {}
 
-export const enrollmentSchema = new mongoose.Schema({
+const enrollmentSchema = new mongoose.Schema({
     courseId: {
         type: mongoose.Types.ObjectId,
         ref: 'Course',
@@ -133,7 +133,7 @@ enrollmentSchema.pre<IEnrollmentModel>('save', async function (next) {
                     lessonId: lessonId,
                     isVideoWatched: false,
                     exercisesStatus: [],
-                }; // Create lesson status
+                };
 
                 for (const exerciseId of lesson.exercises) {
                     const exerciseStatus: IExerciseStatus = {
@@ -141,9 +141,9 @@ enrollmentSchema.pre<IEnrollmentModel>('save', async function (next) {
                         isCompleted: false,
                     };
                     lessonStatus.exercisesStatus.push(exerciseStatus);
-                } // Create exercise status
+                }
 
-                this.lessons.push(lessonStatus); // Add lesson status to enrollment
+                this.lessons.push(lessonStatus);
             }
         }
     } else {
@@ -166,7 +166,7 @@ enrollmentSchema.pre<IEnrollmentModel>('save', async function (next) {
             }
         }
 
-        this.progress = Math.round(((totalWatchedVideos + totalCompletedExercises) / totalElements) * 100); // Calculate progress
+        this.progress = Math.round(((totalWatchedVideos + totalCompletedExercises) / totalElements) * 100);
     }
 
     next();
@@ -178,6 +178,90 @@ enrollmentSchema.pre<IEnrollmentModel>('save', async function (next) {
     if (!this.isNew) {
         return next();
     }
+});
+
+// a hook on the progress, if it's 100 create a certificate
+enrollmentSchema.post<IEnrollmentModel>('save', async function (doc, next) {
+    if (this.progress !== 100) {
+        return next();
+    }
+
+    let traineeName = '';
+    let email = '';
+    const individualTrainee = await IndividualTrainee.findById(this.traineeId).select('firstName lastName email');
+    if (individualTrainee) {
+        traineeName = individualTrainee.firstName + ' ' + individualTrainee.lastName;
+        email = individualTrainee.email;
+    } else {
+        const corporateTrainee = await CorporateTrainee.findById(this.traineeId).select('firstName lastName email');
+
+        if (corporateTrainee) {
+            traineeName = corporateTrainee.firstName + ' ' + corporateTrainee.lastName;
+            email = corporateTrainee.email;
+        }
+    }
+
+    const courseTitle = await Course.findById(this.courseId).select('title');
+    if (!courseTitle) {
+        console.log('course not found');
+        return next();
+    }
+
+    const filePath = createCertificate(traineeName, courseTitle!.title, new Date().toDateString(), this._id as string);
+
+    sendCertificateEmail(email, courseTitle!.title, filePath);
+
+    next();
+});
+
+// a post save hook to update the course's enrollments count and credit the instructor
+enrollmentSchema.post<IEnrollmentModel>('save', async function (doc, next) {
+    if (!this.$locals.wasNew) {
+        return next();
+    }
+
+    try {
+        await Course.findByIdAndUpdate(this.courseId, { $inc: { enrollmentsCount: 1 } }).exec();
+    } catch (err) {
+        console.log("error updating course's enrollments count");
+    } finally {
+        next();
+    }
+
+    const INSTRUCTOR_CREDIT_PERCENTAGE = 0.4;
+    const course = (await Course.findById(this.courseId)) as ICourseModel;
+    if (!course) {
+        console.log('course not found');
+        return next();
+    }
+
+    IndividualTrainee.findById(this.traineeId).then(async (trainee) => {
+        if (!trainee) {
+            return next();
+        }
+
+        const coursePrice = await getCoursePriceAfterPromotion(course);
+        if (coursePrice <= 0) {
+            return next();
+        }
+        // credit the instructor if an individual trainee enrolled
+        Instructor.findById(course.instructor).then(async (instructor) => {
+            if (instructor) {
+                const amount = Math.ceil(coursePrice * INSTRUCTOR_CREDIT_PERCENTAGE * 100) / 100;
+
+                instructor.credit(amount);
+                console.log('instructor credited');
+
+                new Settlement({
+                    instructorId: instructor._id,
+                    courseId: course._id,
+                    amount: amount,
+                }).save();
+
+                sendEnrollmentEmail(instructor.email, course.title);
+            }
+        });
+    });
 });
 
 export default mongoose.model<IEnrollmentModel>('Enrollment', enrollmentSchema);

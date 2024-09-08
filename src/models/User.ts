@@ -32,7 +32,6 @@ export class UserSchema extends Schema {
             },
             username: {
                 type: String,
-                required: true,
                 trim: true,
                 lowercase: true,
                 default: function () {

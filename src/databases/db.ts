@@ -1,10 +1,9 @@
 import { logger } from '../utils/logger';
-import { MONGO_URI } from '../config';
 import mongoose from 'mongoose';
 
 export const connectDB = async () => {
     try {
-        await mongoose.connect(MONGO_URI);
+        mongoose.connect(process.env.MONGO_URI || '');
         mongoose.connection.useDb('lms');
         logger.info('MongoDB connected');
     } catch (error) {

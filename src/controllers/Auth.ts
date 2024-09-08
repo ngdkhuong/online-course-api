@@ -55,7 +55,6 @@ const logout = async (req: Request, res: Response, next: NextFunction) => {
 
     try {
         // Delete user ID from Redis
-        await redis.del(userId);
         res.clearCookie('jwt', { httpOnly: true });
         res.status(StatusCodes.OK).json({ message: 'Logout successful' });
     } catch (error) {

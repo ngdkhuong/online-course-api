@@ -1,5 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
-import { NODE_ENV, ORIGIN, PORT } from './config';
+import { config } from './config';
 import morgan from 'morgan';
 import { stream } from './utils/logger';
 import cors from 'cors';
@@ -7,7 +7,6 @@ import hpp from 'hpp';
 import helmet from 'helmet';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
-import path from 'path';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 
@@ -18,24 +17,33 @@ import AuthRouter from './routes/Auth';
 import InstructorRouter from './routes/Instructor';
 import CourseRouter from './routes/Course';
 import MeRouter from './routes/Me';
+import EnrollmentRouter from './routes/Enrollment';
+import PromotionRouter from './routes/Promotion';
+import ReportThreadRouter from './routes/ReportThread';
 
 import { StatusCodes } from 'http-status-codes';
 import errorMiddleware from './middlewares/errorMiddleware';
+import { parseQueryParams } from './utils/parseQueryParams';
+import { loadModels } from './utils/loadModels';
 
 const app = express();
 
+loadModels();
+
 app.use(morgan('dev', { stream }));
 
+app.use(
+    cors({
+        origin: true,
+        credentials: true,
+    }),
+);
+
 app.use((req, res, next) => {
-    // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', ORIGIN);
-
-    // Request headers you wish to allow
-    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-
-    // Set to true if you need the website to include cookies in the requests sent
-    // to the API (e.g. in case you use sessions)
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    // Website you wish to allow to connect, localhost:3001 is the frontend
+    res.setHeader('Access-Control-Allow-Origin', config.FRONT_END_URL);
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    res.header('Access-Control-Allow-Credentials', 'true');
 
     if (req.method == 'OPTIONS') {
         res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
@@ -45,29 +53,28 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(
-    cors({
-        origin: true,
-        credentials: true,
-    }),
-);
+app.use((req, res, next) => {
+    parseQueryParams(req, res, next);
+});
 
 app.use(hpp());
-app.use(helmet());
-app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' }));
 app.use(compression());
 app.use(express.json({ limit: '5mb' }));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use('/assets', express.static(path.join(__dirname, 'public/assets')));
 
 // TODO: Add routes here
-app.use('/api/auth', AuthRouter);
-app.use('/api/individual-trainees', IndividualTraineeRouter);
-app.use('/api/corporate-trainees', CorporateTraineeRouter);
-app.use('/api/instructors', InstructorRouter);
 app.use('/api/courses', CourseRouter);
+app.use('/api/instructors', InstructorRouter);
+app.use('/api/corporate-trainees', CorporateTraineeRouter);
+app.use('/api/individual-trainees', IndividualTraineeRouter);
+// app.use('/api/country', LangRouter);
+app.use('/api/promotions', PromotionRouter);
+app.use('/api/enrollments', EnrollmentRouter);
+app.use('/api/auth', AuthRouter);
 app.use('/api/me', MeRouter);
+// app.use('/api/payment', PaymentRouter);
+app.use('/api/report-thread', ReportThreadRouter);
 
 const options: swaggerJSDoc.Options = {
     apis: ['src/routes/*.route.ts', 'src/dtos/*.dto.ts'],

@@ -1,4 +1,3 @@
-import { NODE_ENV, PORT } from './config';
 import { connectDB } from './databases/db';
 import { logger } from './utils/logger'; // Update the import path
 import http from 'http';
@@ -10,12 +9,12 @@ import { redis } from './databases/redis';
 // import { AuthRoute } from './routes/authRoute'; // Import the missing AuthRoute
 
 (async function startServer() {
-    app.listen(PORT, () => {
+    app.listen(process.env.PORT, () => {
         // Use the PORT constant instead of app.port
         logger.info(`=================================`);
-        logger.info(`======= ENV: ${NODE_ENV} =======`);
-        logger.info(`🚀 App listening on the http://localhost:${PORT}`);
-        logger.info(`📃 API on the http://localhost:${PORT}/docs`);
+        logger.info(`======= ENV: ${process.env.NODE_ENV} =======`);
+        logger.info(`🚀 App listening on the http://localhost:${process.env.PORT}`);
+        logger.info(`📃 API on the http://localhost:${process.env.PORT}/docs`);
         logger.info(`=================================`);
         connectDB();
         redis;

@@ -127,8 +127,109 @@ export const serializeRating = (rating: IRatingModel) => {
     };
 };
 
+const updateRating = async (req: Request, res: Response) => {
+    const courseId = req.params.courseId;
+    const traineeId = req.body.userId;
+
+    const course: ICourseModel = (await Course.findById(courseId).then((course) => {
+        if (!course) {
+            return res.status(StatusCodes.NOT_FOUND).json({
+                message: 'Course not found',
+            });
+        }
+        return course;
+    })) as ICourseModel;
+
+    // validate traineeId
+    if (req.body.traineeId) {
+        const traineeId = req.body.traineeId;
+        if (!mongoose.Types.ObjectId.isValid(traineeId)) {
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                message: 'Invalid traineeId',
+            });
+        }
+        const individualTrainee = IndividualTrainee.findById(traineeId);
+        const corporateTrainee = CorporateTrainee.findById(traineeId);
+        if (!individualTrainee && !corporateTrainee) {
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                message: 'Invalid traineeId',
+            });
+        }
+    }
+
+    Rating.findOne({ traineeId: traineeId, _id: { $in: course.ratings } })
+        .then((rating) => {
+            if (rating) {
+                rating.set({
+                    rating: req.body.rating,
+                    comment: req.body.comment,
+                });
+
+                return rating
+                    .save()
+                    .then(async (rating) => {
+                        await course.save();
+                        res.status(StatusCodes.OK).json({ rating });
+                    })
+                    .catch((error) => res.status(StatusCodes.BAD_REQUEST).json({ error }));
+            } else {
+                return res.status(StatusCodes.NOT_FOUND).json({ message: 'not found' });
+            }
+        })
+        .catch((error) => res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error }));
+};
+
+const deleteRating = async (req: Request, res: Response) => {
+    const ratingId = req.params.ratingId as unknown as mongoose.Types.ObjectId;
+    const courseId = req.params.courseId;
+    const traineeId = req.body.userId as unknown as mongoose.Types.ObjectId;
+
+    const course: ICourse = (await Course.findById(courseId).then((course) => {
+        if (!course) {
+            return res.status(StatusCodes.NOT_FOUND).json({
+                message: 'Course not found',
+            });
+        }
+        return course;
+    })) as ICourse;
+
+    if (mongoose.Types.ObjectId.isValid(ratingId)) {
+        if (!course.ratings.includes(ratingId)) {
+            res.status(StatusCodes.NOT_FOUND).json({
+                message: 'Rating does not belong to this course',
+            });
+        } else {
+            await Rating.findByIdAndDelete(ratingId)
+                .then((rating) => {
+                    if (rating) {
+                        if (rating.traineeId != traineeId) {
+                            res.status(StatusCodes.BAD_REQUEST).json({
+                                message: 'You are not allowed to delete this rating',
+                            });
+                        } else {
+                            Course.findByIdAndUpdate(courseId, { $pull: { ratings: ratingId } })
+                                .then(() => {
+                                    res.status(StatusCodes.OK).json({ rating });
+                                })
+                                .catch((error) => res.status(StatusCodes.BAD_REQUEST).json({ error }));
+                        }
+                    } else {
+                        return res.status(StatusCodes.NOT_FOUND).json({ message: 'not found' });
+                    }
+                })
+                .catch((error) => res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error }));
+        }
+    } else {
+        res.status(StatusCodes.BAD_REQUEST).json({
+            message: 'Invalid ratingId',
+        });
+    }
+};
+
 export default {
+    updateRating,
     createRating,
     listRatings,
     readRating,
+    deleteRating,
 };

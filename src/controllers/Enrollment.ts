@@ -74,8 +74,29 @@ const updateEnrollment = async (req: Request, res: Response, next: NextFunction)
     }
 };
 
+const createEnrollment = async (req: Request, res: Response, _next: NextFunction) => {
+    const courseId = req.body.courseId as unknown as mongoose.Types.ObjectId;
+    const traineeId = req.body.userId as unknown as mongoose.Types.ObjectId;
+
+    createEnrollmentService(traineeId, courseId)
+        .then((enrollment) => {
+            IndividualTrainee.findById(traineeId).then((trainee) => {
+                if (trainee) {
+                    trainee.enrollments.push(enrollment._id as mongoose.Types.ObjectId);
+                    trainee.save();
+                } else {
+                    return res.status(StatusCodes.NOT_FOUND).json({ message: 'not found' });
+                }
+            });
+
+            return res.status(StatusCodes.CREATED).json({ enrollment });
+        })
+        .catch((error) => res.status(StatusCodes.BAD_REQUEST).json({ error }));
+};
+
 export default {
     readEnrollment,
     readMyEnrollments,
     updateEnrollment,
+    createEnrollment,
 };

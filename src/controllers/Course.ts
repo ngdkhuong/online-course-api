@@ -9,6 +9,7 @@ import { ParsedQs } from 'qs';
 import { UserType } from '../enums/UserType';
 import CorporateTrainee from '../models/CorporateTrainee';
 import IndividualTrainee from '../models/IndividualTrainee';
+import Enrollment from '../models/Enrollment';
 // import Enrollment from '../models/Enrollment';
 
 const createCourse = async (req: Request, res: Response, _next: NextFunction) => {
@@ -31,11 +32,6 @@ const adjustCoursePrice = (courses: ICourse[]) => {
         course.price = course.price;
         course.price = Math.ceil(course.price * 100) / 100;
     });
-};
-
-const listAllCourses = async (req: Request, res: Response, next: NextFunction) => {
-    const courses = await Course.find({});
-    res.json(courses);
 };
 
 const listCourses = async (req: Request, res: Response, next: NextFunction) => {
@@ -281,6 +277,64 @@ const reOpenCourse = async (req: Request, res: Response, _next: NextFunction) =>
     });
 };
 
+const listMyCourses = async (req: Request, res: Response, _next: NextFunction) => {
+    const searchTerm = req.query.searchTerm as string;
+    delete req.query.searchTerm;
+    //adjust price in query
+    if (req.query.price) {
+        const price = JSON.parse(JSON.stringify(req.query.price));
+        const minPrice = price['$gte'] ? price['$gte'] : 0;
+        const maxPrice = price['$lte'] ? price['$lte'] : 100000;
+        req.query.price = { $gte: minPrice, $lte: maxPrice } as any;
+    }
+    const userType = req.body.userType;
+    if (userType === UserType.INSTRUCTOR) {
+        req.query.instructor = req.body.userId;
+    } else if (userType === UserType.CORPORATE_TRAINEE) {
+        const corporateTrainee = await CorporateTrainee.findById(req.body.userId);
+        if (corporateTrainee) {
+            const courses = [];
+            for (const enrollmentId of corporateTrainee.enrollments) {
+                const enrollment = await Enrollment.findById(enrollmentId);
+                if (enrollment) {
+                    courses.push(enrollment.courseId);
+                }
+            }
+
+            req.query['_id'] = { $in: courses } as any;
+        }
+    } else {
+        const individualTrainee = await IndividualTrainee.findById(req.body.userId);
+        if (individualTrainee) {
+            const courses = [];
+            for (const enrollmentId of individualTrainee.enrollments) {
+                const enrollment = await Enrollment.findById(enrollmentId);
+                if (enrollment) {
+                    courses.push(enrollment.courseId);
+                }
+            }
+
+            req.query['_id'] = { $in: courses } as any;
+        }
+    }
+
+    if (searchTerm) {
+        // search by instructor
+        // try to find instructor by name
+        // @ts-ignore
+        await Instructor.fuzzySearch(searchTerm).then((instructors) => {
+            if (instructors.length > 0) {
+                // if instructor found, search by instructor
+                return searchWithInstructors(instructors, req, res);
+            } else {
+                return searchWithTitleSubject(searchTerm, req, res);
+            }
+        });
+    } else {
+        return listCoursesOnlyFilter(req, res);
+    }
+};
+
 export default {
     createCourse,
     listCourses,
@@ -291,5 +345,5 @@ export default {
     publishCourse,
     closeCourse,
     reOpenCourse,
-    listAllCourses,
+    listMyCourses,
 };
